@@ -3,7 +3,7 @@
 Overview
 ========
 
-This project implements an Alexa skill to control home entertainment systems via Keene KIRA IR modules (https://www.keene.co.uk/keene-ir-anywhere-ir-over-ip-modules-pair.html).
+This project implements an Alexa skill to control home entertainment systems via [Keene KIRA IR modules](https://www.keene.co.uk/keene-ir-anywhere-ir-over-ip-modules-pair.html).
 
 Specifically, it provides a lambda function implementing the Smart Home Skill API.
 
@@ -16,7 +16,7 @@ For now, both are hard-coded, with the IR codes manually captured.
 Devices vs. activities
 ======================
 
-The [Smart Home Skills (SHS) API](https://developer.amazon.com/docs/smarthome/build-smart-home-skills-for-entertainment-devices.html) is based on devices being controlled individually.  (There is a concept of a group of devices, but those are identical devices such as a set of lights in the same room.)  This is fine if you literally just have a TV, but if you have multiple components linked together and you want to control them all together, it is bad.  For example, if you have a set-top box (STB) linked to a TV, you would have to separately tell Alex to first turn on the TV, then set the TV to the appropriate input, then turn on the STB, and you have to remember to tell Alexa to change the volume on the TV but the channel on the STB.  Not very user friendly.
+The [Smart Home Skills (SHS) API](https://developer.amazon.com/docs/smarthome/build-smart-home-skills-for-entertainment-devices.html) is based on devices being controlled individually.  (There is a concept of a group of devices, but those are identical devices such as a set of lights in the same room.)  This is fine if you literally just have a TV, but if you have multiple components linked together and you want to control them all together, it is bad.  For example, if you have a set-top box (STB) linked to a TV, you would have to separately tell Alexa to first turn on the TV, then set the TV to the appropriate input, then turn on the STB, and you have to remember to tell Alexa to change the volume on the TV but the channel on the STB.  Not very user friendly.
 
 While this skill does expose individual devices in this way, it also
 - aggregates devices together into activities ("Watch a Blu Ray")
@@ -45,7 +45,7 @@ TBD - currently all devices/activities have proactivelyReported and retrievable 
 State
 =====
 
-The current implementation is stateless.  That is only a problem for those annoying devices that only implement power toggle commands, not power on/power off: we do not remember what state the devices are in.  As a workaround, users can ask Alexa to turn on the individual devices if they've been turned off, or just repeat the command 9though the later doesn't work if it has to turn on multiple devices which just support a power toggle and have got out of sequence).
+The current implementation is stateless.  That is only a problem for those annoying devices that only implement power toggle commands, not power on/power off: we do not remember what state the devices are in.  As a workaround, users can ask Alexa to turn on the individual devices if they've been turned off, or just repeat the command (though the latter doesn't work if it has to turn on multiple devices which just support a power toggle and have got out of sequence).
 
 Authentication
 ==============
