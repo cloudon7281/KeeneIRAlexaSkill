@@ -15,12 +15,18 @@
 
 # XXX We should check for a return of 'OK'.
 
+import socket
+import time
+import logging
+logger = logging.getLogger()
+
 def SendToKIRA(host, port, mesg, repeat, repeatDelay):
+    logger.info("Send to %s:%d with repeat/delay %d/%d message %s", host, port, repeat, repeatDelay, mesg)
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(('', port))
     for i in range(repeat+1):
-        logger.info("Sending event to target %s on port %d; event = %s", host, port, mesg)
         sock.sendto(mesg.encode('utf-8'), (host, port))
         if i == repeat:
             time.sleep(repeatDelay)

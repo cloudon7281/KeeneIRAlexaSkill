@@ -47,6 +47,16 @@ DEVICES =   {
                             }
                         },
                         {
+                            'friendly_name': 'Amazon', 
+                            'manufacturer': 'Amazon',
+                            'model': 'Firestick',
+                            'connected_to': 
+                            {
+                                'next_device': 'Receiver',
+                                'input': 'InputVCR'
+                            }
+                        },
+                        {
                             'friendly_name': 'Receiver', 
                             'manufacturer': 'Arcam',
                             'model': 'AVR360',

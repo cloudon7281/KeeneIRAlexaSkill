@@ -12,6 +12,36 @@
 
 # This file contains definitions of various parts of the Alexa skills schema.
 
+DISCOVERY_RESPONSE = {
+    "event": {
+        "header": {
+            "namespace": "Alexa.Discovery",
+            "name": "Discover.Response",
+            "payloadVersion": "3",
+        },
+	    "payload": {}
+    }
+}
+
+DIRECTIVE_RESPONSE = {
+    "context": {
+        "properties": [
+            {
+                "uncertaintyInMilliseconds": 500
+            }
+        ]
+    },
+    "event": {
+        "header": {
+            "namespace": "Alexa",
+            "name": "Response",
+            "payloadVersion": "3",
+        },
+        "payload": {}
+    }
+
+}
+
 CAPABILITY_DISCOVERY_RESPONSES = {
 
 	'PowerController':	{

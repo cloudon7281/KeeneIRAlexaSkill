@@ -13,9 +13,42 @@
 # This file contains a number of utilities.
 
 import logging
+import time
+import uuid
 from deviceDB import DEVICE_DB
+from userDevices import DEVICES
 
 logger = logging.getLogger()
+
+def get_utc_timestamp(seconds=None):
+    return time.strftime("%Y-%m-%dT%H:%M:%S.00Z", time.gmtime(seconds))
+
+def get_uuid():
+    return str(uuid.uuid4())
+
+def verify_user(user):
+	# Check we know about this user
+	if user in DEVICES:
+		logger.info("Recognise user %s", user)
+	else:
+		logger.error("Don't recognise user %s", user)
+
+def verify_request(responses, endpoint, interface, directive):
+	# Check we know about this endpoint
+	if endpoint in responses:
+		logger.info("Recognise endpoint %s", endpoint)
+
+		if interface in responses[endpoint]:
+			logger.info("Recognise interface %s", interface)
+
+			if directive in responses[endpoint][interface]:
+				logger.info("Recognise directive %s", directive)
+			else:
+				logger.error("Don't recognise directive %s", directive)
+		else:
+			logger.error("Don't recognise interface %s", interface)
+	else:
+		logger.error("Don't recognise endpoint %s", endpoint)
 
 def verify_devices(devices):
 	# Check we recognise the list of devices the user has.  As we'er running
