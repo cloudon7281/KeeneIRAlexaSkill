@@ -19,6 +19,7 @@ import time
 import json
 import uuid
 import socket
+import pprint
 
 from userDevices import DEVICES
 from KIRAIO import SendToKIRA
@@ -26,19 +27,20 @@ from mapping import map_user_devices
 
 # Setup logger
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-#fh.setLevel(logging.DEBUG)
-## create console handler with a higher log level
-#ch = logging.StreamHandler()
-#ch.setLevel(logging.ERROR)
-## create formatter and add it to the handlers
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#fh.setFormatter(formatter)
-#ch.setFormatter(formatter)
-## add the handlers to the logger
-#logger.addHandler(fh)
-#logger.addHandler(ch)
+logger.setLevel(logging.DEBUG)
+fh = logging.FileHandler('kira.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.ERROR)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 target = "cloudon7281.ddns.net"
 
@@ -54,6 +56,7 @@ def lambda_handler(request, context):
     # For now, map the user devices to endpoint and discovery information
     # on every request
     user_activities = map_user_devices(DEVICES[user]['devices'])
+    pp.pprint(user_activities)
 
     try:
         logger.info("Directive:")
@@ -62,7 +65,7 @@ def lambda_handler(request, context):
         if request["directive"]["header"]["name"] == "Discover":
             response = handle_discovery(user_activities['endpoints'])
         else:
-            response = handle_non_discovery(request, endpoints)
+            response = handle_non_discovery(request, user_activities['directive_responses'])
 
         logger.info("Response:")
         logger.info(json.dumps(response, indent=4, sort_keys=True))
@@ -85,8 +88,6 @@ def handle_discovery(endpoints):
     # We want to return both the individual devices and the aggregated 
     # activities for the given user.
     # XXX for now just do activties.
-    # XXX We can find the appropriate definition to return in the SHS definition 
-    # XXX field
     logger.info("It's a discovery")
 
     response =  {
@@ -112,6 +113,9 @@ def handle_non_discovery(request, user):
     endpoint_id = request["endpoint"]["endpointId"]
 
     logger.info("It's an action directive: %s, %s for endpoint ", request_namespace, request_name, endpoint_id)
+
+    validate_user(user)
+    validate_endpoint(endpoint_id)
 
     if user in ACTIVITIES:
             logger.info("Found user in activities list")
@@ -211,4 +215,4 @@ discover = {
     }
   }
 }
-#response = lambda_handler(discover, "")
+response = lambda_handler(discover, "")
