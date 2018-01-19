@@ -37,7 +37,7 @@ DEVICES =   {
                             }
                         },
                         {
-                            'friendly_name': 'YouView', 
+                            'friendly_name': 'TV', 
                             'manufacturer': 'Humax',
                             'model': 'DTR-T2100',
                             'connected_to': 
@@ -62,14 +62,14 @@ DEVICES =   {
                             'model': 'AVR360',
                             'connected_to': 
                             {
-                                'next_device': 'TV',
+                                'next_device': 'Monitor',
                                 'input': 'InputHDMI1'
                             }
                         },
                         {
-                            'friendly_name': 'TV', 
+                            'friendly_name': 'Monitor', 
                             'manufacturer': 'Pioneer',
-                            'model': 'PDP-LX50D',
+                            'model': 'PDP-LX508D',
                         }
                     ]
                 }

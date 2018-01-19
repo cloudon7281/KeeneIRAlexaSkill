@@ -14,22 +14,24 @@
 # API, both discvoery and subsequent defines a set of commands and associated
 # Keene KIRA IR commands for a range of devices.
 
+import os
 import logging
 import time
 import json
 import pprint
+import requests
 
 from userDevices import DEVICES
-from KIRAIO import SendToKIRA
-from mapping import map_user_devices
 from alexaSchema import DISCOVERY_RESPONSE, DIRECTIVE_RESPONSE, CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES
-from utilities import verify_user, verify_request, get_uuid, get_utc_timestamp
-
 from deviceDB import DEVICE_DB
+
+from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp, extract_token_from_request
+from LWAauth import get_user_from_token
+from mapping import map_user_devices
+from KIRAIO import SendToKIRA
 
 # Logger boilerplate
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 TARGET = "cloudon7281.ddns.net"
@@ -44,38 +46,77 @@ def lambda_handler(request, context):
     # XXX We should have something at this point that looks at the token in the
     # context and figures out what user it is for.  But I don't know how to do
     # that just yet, so ignore it for now and just assume it's me.
-    user = "user1"
-    logger.info("Request is for user %s", user)
-    verify_user(user)
+    logger.info("Received request")
+    logger.info(json.dumps(request, indent=4))
 
-    # For now, map the user devices to endpoint and discovery information
-    # on every request
-    user_activities = map_user_devices(DEVICES[user]['devices'])
-    pp.pprint(user_activities)
-
-    try:
-        logger.info("Directive:")
-        logger.info(json.dumps(request, indent=4, sort_keys=True))
-
-        if request["directive"]["header"]["name"] == "Discover":
-            response = handle_discovery(user_activities['endpoints'])
+    if 'TEST_USER' in os.environ:
+        # Currently we are testing with a hard-coded user name
+        user = os.environ['TEST_USER']
+        logger.debug("User name passed as env var = %s", user)
+    else:
+        # User name must be retrieved from a token, either passed in as an env
+        # var or extracted from the real request.
+        if 'TEST_TOKEN' in os.environ:
+            OAuth2_token = os.environ['TEST_TOKEN']
+            logger.debug("Token passed as env var = %s", OAuth2_token)
         else:
-            response = handle_non_discovery(request, user_activities['directive_responses'])
+            # Real request.  Extract token.
+            OAuth2_token = extract_token_from_request(request)
+        
+        user = get_user_from_token(OAuth2_token)
 
-        logger.info("Response:")
-        logger.info(json.dumps(response, indent=4, sort_keys=True))
+    logger.info("Request is for user %s", user)
+    if request["directive"]["header"]["name"] == "Discover":
+        req_is_discovery = True
+    else:
+        req_is_discovery = False
 
-        return response
+    # We now need the details of the user's devices (for a discovery request)
+    # or their auto-generated activities (for a directive).  
+    #
+    # If we're using static files, we do this mapping on every request.
+    #
+    # If we're using S3, then
+    # - the user's details (list of devices) is in S3
+    # - on discovery, we retrieve this, auto-generate the endpoint list and
+    #   set of mappings from directives -> commands, return the endpoint list
+    #   to Alexa, and store the mapped activities back into S3 for use on
+    #   directives
+    # - for directives, we read the mapped activiites from S3.
+    if 'USE_STATIC_FILES' in os.environ:
+        logger.debug("Using static files - map the user -> endpoints/activities")
 
-    except ValueError as error:
-        logger.error(error)
-        raise
+        # Check this user is in the static input file.
+        verify_static_user(user)
 
-def handle_discovery(endpoints):
+        # Map the user devices to endpoint and discovery information using
+        # static files.
+        user_activities = map_user_devices(DEVICES[user]['devices'], DEVICE_DB)
+
+        endpoints = user_activities['endpoints']
+        activity_responses = user_activities['directive_responses']
+    else:
+        # If this is a discovery, we need to read the user's devices object 
+        # plus the global device DB from S3, and then write the mapped activity
+        # responses back to S3.
+        # If this is a directive, we read the activity responses.
+        logger.debug("Reading from S3")
+
+    if req_is_discovery:
+        response = reply_to_discovery(endpoints)
+    else:
+        response = handle_non_discovery(request, activity_responses)
+
+    logger.info("Response:")
+    logger.info(json.dumps(response, indent=4, sort_keys=True))
+
+    return response
+
+def reply_to_discovery(endpoints):
     # Handle discovery requests.  This is straightforward: we have already 
     # mapped the users set of devices to an auto-generated list of activities
     # (endpoints), so just return them.
-    logger.info("It's a discovery")
+    logger.info("Reply to discovery")
 
     response = DISCOVERY_RESPONSE
     response['event']['payload']['endpoints'] = endpoints
@@ -83,7 +124,7 @@ def handle_discovery(endpoints):
                     
     return response
 
-def handle_non_discovery(request, responses):
+def handle_non_discovery(request, activity_responses):
     # We have received a directive for some capability interface, which we have
     # to now act on.
     # The responses structure is a dict telling us what to do.  It is a nested
@@ -117,35 +158,38 @@ def handle_non_discovery(request, responses):
 
     logger.info("Received directive %s on interface %s for endpoint %s", directive, interface, endpoint_id)
 
-    verify_request(responses, endpoint_id, interface, directive)
+    verify_request(activity_responses, endpoint_id, interface, directive)
 
-    commands_list = responses[endpoint_id][interface][directive]
+    commands_list = activity_responses[endpoint_id][interface][directive]
 
     logger.info("Commands to execute:\n%s", pp.pformat(commands_list))
 
     for command_tuple in commands_list:
         for verb in command_tuple:
-            logger.info("Verb to run: %s", verb)
+            logger.debug("Verb to run: %s", verb)
 
             if verb == 'SingleIRCommand':
                 # Send to KIRA the single command specified.
-                KIRA_string = command_tuple[verb]['single']
-                SendToKIRA(TARGET, PORT, KIRA_string, REPEAT, DELAY)
+                KIRA_string = command_tuple[verb]['single']['KIRA']
+                repeats = command_tuple[verb]['single']['repeats']
+                SendToKIRA(TARGET, PORT, KIRA_string, repeats, DELAY)
 
             elif verb == 'StepIRCommands':
                 # In this case we need to extract the value N in the payload
                 # then send either the +ve or -ve command N times.
                 # XXX need to generalise payload location from AdjustVolume
                 steps = request['directive']['payload']['volumeSteps']
-                logger.info("Adjustment to make: %d", steps)
+                logger.debug("Adjustment to make: %d", steps)
 
                 if steps > 0:
-                    KIRA_string = command_tuple[verb]['+ve']
+                    KIRA_string = command_tuple[verb]['+ve']['KIRA']
+                    repeats = command_tuple[verb]['+ve']['repeats']
                 else:
-                    KIRA_string = command_tuple[verb]['-ve']
+                    KIRA_string = command_tuple[verb]['-ve']['KIRA']
+                    repeats = command_tuple[verb]['+ve']['repeats']
 
                 for n in range(0, abs(steps)):
-                    SendToKIRA(TARGET, PORT, KIRA_string, REPEAT, DELAY)
+                    SendToKIRA(TARGET, PORT, KIRA_string, repeats, DELAY)
                     time.sleep(PAUSE_BETWEEN_COMMANDS)
 
             elif verb == 'DigitsIRCommands':
@@ -164,11 +208,12 @@ def handle_non_discovery(request, responses):
                 if number == -1:
                     logger.error("Can't extract channel number from directive!")
                 else:
-                    logger.info("Number to send: %s", number)
+                    logger.debug("Number to send: %s", number)
 
                     for digit in number:
-                        KIRA_string = command_tuple[verb][digit]
-                        SendToKIRA(TARGET, PORT, KIRA_string, REPEAT, DELAY)
+                        KIRA_string = command_tuple[verb][digit]['KIRA']
+                        repeats = command_tuple[verb][digit]['repeats']
+                        SendToKIRA(TARGET, PORT, KIRA_string, repeats, DELAY)
                         time.sleep(PAUSE_BETWEEN_COMMANDS)
 
             elif verb == 'Pause':

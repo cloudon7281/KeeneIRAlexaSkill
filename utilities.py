@@ -15,7 +15,6 @@
 import logging
 import time
 import uuid
-from deviceDB import DEVICE_DB
 from userDevices import DEVICES
 
 logger = logging.getLogger()
@@ -26,59 +25,70 @@ def get_utc_timestamp(seconds=None):
 def get_uuid():
     return str(uuid.uuid4())
 
-def verify_user(user):
-	# Check we know about this user
-	if user in DEVICES:
-		logger.info("Recognise user %s", user)
-	else:
-		logger.error("Don't recognise user %s", user)
+def verify_static_user(user):
+    # Check we know about this user
+    if user in DEVICES:
+        logger.debug("Recognise user %s", user)
+    else:
+        logger.error("Don't recognise user %s", user)
 
 def verify_request(responses, endpoint, interface, directive):
-	# Check we know about this endpoint
-	if endpoint in responses:
-		logger.info("Recognise endpoint %s", endpoint)
+    # Check we know about this endpoint
+    if endpoint in responses:
+        logger.debug("Recognise endpoint %s", endpoint)
 
-		if interface in responses[endpoint]:
-			logger.info("Recognise interface %s", interface)
+        if interface in responses[endpoint]:
+            logger.debug("Recognise interface %s", interface)
 
-			if directive in responses[endpoint][interface]:
-				logger.info("Recognise directive %s", directive)
-			else:
-				logger.error("Don't recognise directive %s", directive)
-		else:
-			logger.error("Don't recognise interface %s", interface)
-	else:
-		logger.error("Don't recognise endpoint %s", endpoint)
+            if directive in responses[endpoint][interface]:
+                logger.debug("Recognise directive %s", directive)
+            else:
+                logger.error("Don't recognise directive %s", directive)
+        else:
+            logger.error("Don't recognise interface %s", interface)
+    else:
+        logger.error("Don't recognise endpoint %s", endpoint)
 
-def verify_devices(devices):
-	# Check we recognise the list of devices the user has.  As we'er running
-	# as a lambda, don't worry too much about raising and catching exceptions;
-	# the important thing is to log it.
-	logger.info("Validate user devices exist in DB")
-	bad_device = False
-	for device in devices:
-		logger.info("User has device %s", device['friendly_name'])	
-		manu = device['manufacturer']
-		model = device['model']
-		if manu in DEVICE_DB:
-			if model in DEVICE_DB[manu]:
-				logger.info("Manu %s, model %s found OK", manu, model)
-			else:
-				logger.error("Device %s with manu %s has incorrect model %s", device['friendly_name'], manu, model)
-				bad_device = True
-		else:
-			logger.error("Device %s has incorrect manu %s", device['friendly_name'], manu)
-			bad_device = True
+def verify_devices(devices, database):
+    # Check we recognise the list of devices the user has.  As we'er running
+    # as a lambda, don't worry too much about raising and catching exceptions;
+    # the important thing is to log it.
+    logger.debug("Validate user devices exist in DB")
+    bad_device = False
+    for device in devices:
+        logger.debug("User has device %s", device['friendly_name']) 
+        manu = device['manufacturer']
+        model = device['model']
+        if manu in database:
+            if model in database[manu]:
+                logger.debug("Manu %s, model %s found OK", manu, model)
+            else:
+                logger.error("Device %s with manu %s has incorrect model %s", device['friendly_name'], manu, model)
+                bad_device = True
+        else:
+            logger.error("Device %s has incorrect manu %s", device['friendly_name'], manu)
+            bad_device = True
 
-def find_user_device_in_DB(user_device):
-	# Given a user device, return the details in the device DB
-	manu = user_device['manufacturer']
-	model = user_device['model']
-	return DEVICE_DB[manu][model]
+def find_user_device_in_DB(device, database):
+    # Given a user device, return the details in the device DB
+    manu = device['manufacturer']
+    model = device['model']
+    return database[manu][model]
 
 def find_device_from_friendly_name(devices, friendly_name):
-	# Given a device friendly name, find it in the list of user devices
-	for d in devices:
-		if d['friendly_name'] == friendly_name:
-			return d
+    # Given a device friendly name, find it in the list of user devices
+    for d in devices:
+        if d['friendly_name'] == friendly_name:
+            return d
 
+def extract_token_from_request(request):
+    # Find the OAuth2 token from either a discovery or directive request.
+    locations = [ 'endpoint', 'payload' ]
+    token = None
+
+    for l in locations:
+        if l in request['directive']:
+            token = request['directive'][l]['scope']['token']
+
+    logger.debug("Token passed in request = %s", token)
+    return token

@@ -25,62 +25,75 @@ DISCOVERY_RESPONSE = {
 
 DIRECTIVE_RESPONSE = {
     "context": {
-        "properties": [
-            {
-                "uncertaintyInMilliseconds": 500
-            }
-        ]
     },
     "event": {
         "header": {
             "namespace": "Alexa",
             "name": "Response",
             "payloadVersion": "3",
-        },
+    	},
         "payload": {}
     }
-
 }
 
 CAPABILITY_DISCOVERY_RESPONSES = {
 
 	'PowerController':	{
-	                        "type": "AlexaInterface",
-	                        "interface": "Alexa.PowerController",
-	                        "version": "1.0",
-	                        "properties":
-	                        {
-	                            "supported":
-	                            [
-	                                { "name": "powerState" }
-	                            ],
-	                        },
-                   		},
+        "type": "AlexaInterface",
+        "interface": "Alexa.PowerController",
+        "version": "1.0",
+        "properties":
+        {
+            "supported":
+            [
+                { "name": "powerState" }
+            ],
+        },
+	},
 	'PlaybackController':  {
-	                        "type": "AlexaInterface",
-	                        "interface": "Alexa.PlaybackController",
-	                        "version": "3",
-	                        "supportedOperations": [ "Play", "Pause", "Stop" ]
-                      	   },
+        "type": "AlexaInterface",
+        "interface": "Alexa.PlaybackController",
+        "version": "3",
+        "supportedOperations": [ "Play", "Pause", "Stop" ]
+    },
     'ChannelController': {
-	                        "type": "AlexaInterface",
-	                        "interface": "Alexa.ChannelController",
-	                        "version": "3"
-	                     },
-	'StepSpeaker':		{
-	                        "type": "AlexaInterface",
-	                        "interface": "Alexa.StepSpeaker",
-	                        "version": "3",
-	                        "properties": {},
-                   		},
-    } 	   
+        "type": "AlexaInterface",
+        "interface": "Alexa.ChannelController",
+        "version": "3"
+    },
+	'StepSpeaker': {
+        "type": "AlexaInterface",
+        "interface": "Alexa.StepSpeaker",
+        "version": "3",
+        "properties": {},
+	},
+} 	   
+
+CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES = {
+
+	'PowerController': {
+        "namespace": "Alexa.PowerController",
+        "name": "powerState",
+        "value": "ON",
+        "uncertaintyInMilliseconds": 200,
+    },
+	'ChannelController':	{
+        "namespace": "Alexa.ChannelController",
+        "name": "channel",
+        "uncertaintyInMilliseconds": 200,
+    },
+   	'StepSpeaker':	{
+    },
+   	'PlaybackController':	{
+    },
+} 	   
 
 CAPABILITY_DIRECTIVES = {
 	
 	'PowerController': {
 		'TurnOn' : {
 			'SingleIRCommand': [ 'PowerOn', 'PowerToggle' ],
-			'Pause': 5,
+			'Pause': 4,
 			'InputChoice': True
 		},
 		'TurnOff' : {
