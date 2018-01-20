@@ -18,15 +18,16 @@ import logging
 import json
 import pprint
 import requests
+import urllib
 
 logger = logging.getLogger()
 
-LWA_PROFILE_URL = 'https://api.amazon.com/user/profile?access_token='
+LWA_PROFILE_URL = 'https://api.amazon.com/user/profile?'
 
 def get_user_from_token(token):
     logger.debug("Token is %s", token)
 
-    url = LWA_PROFILE_URL + token
+    url = LWA_PROFILE_URL + urllib.parse.urlencode({ 'access_token' : token })
     r = requests.get(url=url)
 
     if r.status_code == 200:

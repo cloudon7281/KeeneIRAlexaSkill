@@ -22,10 +22,10 @@
 # code.
 
 DEVICES =   {
-                'user1':
-                {
-                   'devices':
-                    [
+                'user1': {
+                    'target': 'cloudon7281.ddns.net',
+                    'port': 65432,
+                    'devices': [
                         {
                             'friendly_name': 'Blu-ray', 
                             'manufacturer': 'Panasonic',
@@ -70,6 +70,37 @@ DEVICES =   {
                             'friendly_name': 'Monitor', 
                             'manufacturer': 'Pioneer',
                             'model': 'PDP-LX508D',
+                        }
+                    ]
+                },
+                'user2': {
+                    'target': '192.168.1.31',
+                    'port': 65432,
+                    'devices': [
+                        {
+                            'friendly_name': 'TV',
+                            'manufacturer': 'Humax',
+                            'model': 'PVR-9300T',
+                            'connected_to':
+                            {
+                                'next_device': 'Monitor',
+                                'input': 'Input2'
+                            }
+                        },
+                        {
+                            'friendly_name': 'Amazon', 
+                            'manufacturer': 'Amazon',
+                            'model': 'Firestick',
+                            'connected_to': 
+                            {
+                                'next_device': 'Monitor',
+                                'input': 'Input3'
+                            }
+                        },
+                        {
+                            'friendly_name': 'Monitor', 
+                            'manufacturer': 'Panasonic',
+                            'model': 'TX-L32X10AB',
                         }
                     ]
                 }

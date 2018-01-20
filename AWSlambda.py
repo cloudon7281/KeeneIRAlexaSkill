@@ -32,9 +32,9 @@ from KIRAIO import SendToKIRA
 
 # Logger boilerplate
 logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
-TARGET = "cloudon7281.ddns.net"
 PORT = 65432
 REPEAT = 1
 DELAY = 0.04
@@ -92,6 +92,8 @@ def lambda_handler(request, context):
         # Map the user devices to endpoint and discovery information using
         # static files.
         user_activities = map_user_devices(DEVICES[user]['devices'], DEVICE_DB)
+        user_activities['directive_responses']['target'] = DEVICES[user]['target']
+        user_activities['directive_responses']['port'] = DEVICES[user]['port']
 
         endpoints = user_activities['endpoints']
         activity_responses = user_activities['directive_responses']
@@ -161,7 +163,11 @@ def handle_non_discovery(request, activity_responses):
     verify_request(activity_responses, endpoint_id, interface, directive)
 
     commands_list = activity_responses[endpoint_id][interface][directive]
+    target = activity_responses['target']
+    port = activity_responses['port']
 
+    logger.info("Target is %s\:%d", target, port)
+    print("Target is %s\:%d", target, port)
     logger.info("Commands to execute:\n%s", pp.pformat(commands_list))
 
     for command_tuple in commands_list:
@@ -172,7 +178,7 @@ def handle_non_discovery(request, activity_responses):
                 # Send to KIRA the single command specified.
                 KIRA_string = command_tuple[verb]['single']['KIRA']
                 repeats = command_tuple[verb]['single']['repeats']
-                SendToKIRA(TARGET, PORT, KIRA_string, repeats, DELAY)
+                SendToKIRA(target, port, KIRA_string, repeats, DELAY)
 
             elif verb == 'StepIRCommands':
                 # In this case we need to extract the value N in the payload
@@ -189,7 +195,7 @@ def handle_non_discovery(request, activity_responses):
                     repeats = command_tuple[verb]['+ve']['repeats']
 
                 for n in range(0, abs(steps)):
-                    SendToKIRA(TARGET, PORT, KIRA_string, repeats, DELAY)
+                    SendToKIRA(target, port, KIRA_string, repeats, DELAY)
                     time.sleep(PAUSE_BETWEEN_COMMANDS)
 
             elif verb == 'DigitsIRCommands':
@@ -213,7 +219,7 @@ def handle_non_discovery(request, activity_responses):
                     for digit in number:
                         KIRA_string = command_tuple[verb][digit]['KIRA']
                         repeats = command_tuple[verb][digit]['repeats']
-                        SendToKIRA(TARGET, PORT, KIRA_string, repeats, DELAY)
+                        SendToKIRA(target, port, KIRA_string, repeats, DELAY)
                         time.sleep(PAUSE_BETWEEN_COMMANDS)
 
             elif verb == 'Pause':
