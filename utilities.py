@@ -88,7 +88,8 @@ def extract_token_from_request(request):
 
     for l in locations:
         if l in request['directive']:
-            token = request['directive'][l]['scope']['token']
+            if 'scope' in request['directive'][l]:
+                token = request['directive'][l]['scope']['token']
 
     logger.debug("Token passed in request = %s", token)
     return token

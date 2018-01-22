@@ -22,7 +22,7 @@
 # code.
 
 DEVICES =   {
-                'user1': {
+                'amzn1.account.AGY6FJTLLYJH6EYDMHWXLQSUJQZQ': {
                     'target': 'cloudon7281.ddns.net',
                     'port': 65432,
                     'devices': [
@@ -73,8 +73,8 @@ DEVICES =   {
                         }
                     ]
                 },
-                'user2': {
-                    'target': '192.168.1.31',
+                'amzn1.account.AEH3ZOZHYIZQA3VB75UPFMTQAMPQ': {
+                    'target': 'hbradburn7281.ddns.net',
                     'port': 65432,
                     'devices': [
                         {

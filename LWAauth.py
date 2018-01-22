@@ -33,6 +33,13 @@ def get_user_from_token(token):
     if r.status_code == 200:
         logger.debug("Amazon profile returned is:")
         logger.debug(json.dumps(r.json(), indent=4))
+
+        body = r.json()
+        user = body['user_id']
     else:
         logger.error("Amazon look up returned an error %d", r.status_code)
         logger.error(json.dumps(r.json(), indent=4))
+
+        user = "<unknown>"
+
+    return user
