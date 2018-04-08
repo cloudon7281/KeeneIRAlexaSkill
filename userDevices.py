@@ -23,13 +23,16 @@
 
 DEVICES =   {
                 'amzn1.account.AGY6FJTLLYJH6EYDMHWXLQSUJQZQ': {
-                    'target': 'cloudon7281.ddns.net',
-                    'port': 65432,
+                    'targets': {
+                        'primary': 'cloudon7281.ddns.net:65432',
+                        'secondary': 'cloudon7281.ddns.net:65433'
+                    },
                     'devices': [
                         {
                             'friendly_name': 'Blu-ray', 
                             'manufacturer': 'Panasonic',
                             'model': 'DMP-BDT110EB',
+                            'target': 'primary',
                             'connected_to': 
                             {
                                 'next_device': 'Receiver',
@@ -40,6 +43,7 @@ DEVICES =   {
                             'friendly_name': 'TV', 
                             'manufacturer': 'Humax',
                             'model': 'DTR-T2100',
+                            'target': 'primary',
                             'connected_to': 
                             {
                                 'next_device': 'Receiver',
@@ -60,6 +64,7 @@ DEVICES =   {
                             'friendly_name': 'Receiver', 
                             'manufacturer': 'Arcam',
                             'model': 'AVR360',
+                            'target': 'primary',
                             'connected_to': 
                             {
                                 'next_device': 'Monitor',
@@ -70,17 +75,19 @@ DEVICES =   {
                             'friendly_name': 'Monitor', 
                             'manufacturer': 'Pioneer',
                             'model': 'PDP-LX508D',
+                            'target': 'secondary'
                         }
                     ]
                 },
                 'amzn1.account.AEH3ZOZHYIZQA3VB75UPFMTQAMPQ': {
-                    'target': 'hbradburn7281.ddns.net',
-                    'port': 65432,
+                    'targets': {
+                        'primary': 'hbradburn7281.ddns.net:65432',
+                    },
                     'devices': [
                         {
                             'friendly_name': 'TV',
                             'manufacturer': 'Humax',
-                            'model': 'PVR-9300T',
+                            'model': 'DTR-T2100',
                             'connected_to':
                             {
                                 'next_device': 'Monitor',

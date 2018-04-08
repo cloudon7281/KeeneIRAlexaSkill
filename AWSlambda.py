@@ -20,12 +20,14 @@ import time
 import json
 import pprint
 import requests
+import copy
 
 from userDevices import DEVICES
 from alexaSchema import DISCOVERY_RESPONSE, DIRECTIVE_RESPONSE, CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES
 from deviceDB import DEVICE_DB
 
-from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp, extract_token_from_request
+from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
+from AWSutilities import extract_token_from_request, unpack_request
 from LWAauth import get_user_from_token
 from mapping import map_user_devices
 from KIRAIO import SendToKIRA
@@ -35,17 +37,14 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
-PORT = 65432
 REPEAT = 1
 DELAY = 0.04
 PAUSE_BETWEEN_COMMANDS = 0.2
 
+
 def lambda_handler(request, context):
     # Main lambda handler.  We simply switch on the directive type.
 
-    # XXX We should have something at this point that looks at the token in the
-    # context and figures out what user it is for.  But I don't know how to do
-    # that just yet, so ignore it for now and just assume it's me.
     logger.info("Received request")
     logger.info(json.dumps(request, indent=4))
 
@@ -91,23 +90,18 @@ def lambda_handler(request, context):
 
         # Map the user devices to endpoint and discovery information using
         # static files.
-        user_activities = map_user_devices(DEVICES[user]['devices'], DEVICE_DB)
-        user_activities['directive_responses']['target'] = DEVICES[user]['target']
-        user_activities['directive_responses']['port'] = DEVICES[user]['port']
-
-        endpoints = user_activities['endpoints']
-        activity_responses = user_activities['directive_responses']
+        endpoints, directive_responses = map_user_devices(DEVICES[user], DEVICE_DB)
     else:
         # If this is a discovery, we need to read the user's devices object 
         # plus the global device DB from S3, and then write the mapped activity
         # responses back to S3.
         # If this is a directive, we read the activity responses.
-        logger.debug("Reading from S3")
+        logger.debug("Reading from S3 - not yet implemneted")
 
     if req_is_discovery:
         response = reply_to_discovery(endpoints)
     else:
-        response = handle_non_discovery(request, activity_responses)
+        response = handle_non_discovery(request, directive_responses)
 
     logger.info("Response:")
     logger.info(json.dumps(response, indent=4, sort_keys=True))
@@ -126,7 +120,7 @@ def reply_to_discovery(endpoints):
                     
     return response
 
-def handle_non_discovery(request, activity_responses):
+def handle_non_discovery(request, directive_responses):
     # We have received a directive for some capability interface, which we have
     # to now act on.
     # The responses structure is a dict telling us what to do.  It is a nested
@@ -152,22 +146,16 @@ def handle_non_discovery(request, activity_responses):
     #                         with IR commands for each decimal digit
     #   Pause               - pause for N seconds before sending next command;
     #                         time to wait is the value
-    alexa_interface = request["directive"]["header"]["namespace"]
-    # Strip off the 'Alexa.' at start of the string
-    interface=alexa_interface[6:]
-    directive = request["directive"]["header"]["name"]
-    endpoint_id = request["directive"]["endpoint"]["endpointId"]
+
+    # Extract the key fields from the request and check it's one we recognise
+    interface, directive, endpoint_id = unpack_request(request)
+    verify_request(directive_responses, endpoint_id, interface, directive)
 
     logger.info("Received directive %s on interface %s for endpoint %s", directive, interface, endpoint_id)
 
-    verify_request(activity_responses, endpoint_id, interface, directive)
+    # Get the list of commands we need to respond to this directive
+    commands_list = directive_responses[endpoint_id][interface][directive]
 
-    commands_list = activity_responses[endpoint_id][interface][directive]
-    target = activity_responses['target']
-    port = activity_responses['port']
-
-    logger.info("Target is %s\:%d", target, port)
-    print("Target is %s\:%d", target, port)
     logger.info("Commands to execute:\n%s", pp.pformat(commands_list))
 
     for command_tuple in commands_list:
@@ -178,7 +166,8 @@ def handle_non_discovery(request, activity_responses):
                 # Send to KIRA the single command specified.
                 KIRA_string = command_tuple[verb]['single']['KIRA']
                 repeats = command_tuple[verb]['single']['repeats']
-                SendToKIRA(target, port, KIRA_string, repeats, DELAY)
+                target = command_tuple[verb]['single']['target']
+                SendToKIRA(target, KIRA_string, repeats, DELAY)
 
             elif verb == 'StepIRCommands':
                 # In this case we need to extract the value N in the payload
@@ -188,14 +177,16 @@ def handle_non_discovery(request, activity_responses):
                 logger.debug("Adjustment to make: %d", steps)
 
                 if steps > 0:
-                    KIRA_string = command_tuple[verb]['+ve']['KIRA']
-                    repeats = command_tuple[verb]['+ve']['repeats']
+                    index = '+ve'
                 else:
-                    KIRA_string = command_tuple[verb]['-ve']['KIRA']
-                    repeats = command_tuple[verb]['+ve']['repeats']
-
+                    index = '-ve'
+                
+                KIRA_string = command_tuple[verb][index]['KIRA']
+                target = command_tuple[verb][index]['target']
+                repeats = command_tuple[verb][index]['repeats']
+                
                 for n in range(0, abs(steps)):
-                    SendToKIRA(target, port, KIRA_string, repeats, DELAY)
+                    SendToKIRA(target, KIRA_string, repeats, DELAY)
                     time.sleep(PAUSE_BETWEEN_COMMANDS)
 
             elif verb == 'DigitsIRCommands':
@@ -218,8 +209,9 @@ def handle_non_discovery(request, activity_responses):
 
                     for digit in number:
                         KIRA_string = command_tuple[verb][digit]['KIRA']
+                        target = command_tuple[verb][digit]['target']
                         repeats = command_tuple[verb][digit]['repeats']
-                        SendToKIRA(target, port, KIRA_string, repeats, DELAY)
+                        SendToKIRA(target, KIRA_string, repeats, DELAY)
                         time.sleep(PAUSE_BETWEEN_COMMANDS)
 
             elif verb == 'Pause':

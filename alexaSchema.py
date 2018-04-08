@@ -54,7 +54,7 @@ CAPABILITY_DISCOVERY_RESPONSES = {
         "type": "AlexaInterface",
         "interface": "Alexa.PlaybackController",
         "version": "3",
-        "supportedOperations": [ "Play", "Pause", "Stop" ]
+        "supportedOperations": [ "Play", "Pause", "Stop", "Rewind", "FastForward" ]
     },
     'ChannelController': {
         "type": "AlexaInterface",
@@ -103,7 +103,9 @@ CAPABILITY_DIRECTIVES = {
 	'PlaybackController': {
 		'Play': { 'SingleIRCommand': ['Play'] },
 		'Pause': { 'SingleIRCommand': ['Pause'] },
-		'Stop': { 'SingleIRCommand': ['Stop'] },
+        'Stop': { 'SingleIRCommand': ['Stop'] },
+        'Rewind': { 'SingleIRCommand': ['Rewind'] },
+		'FastForward': { 'SingleIRCommand': ['FastForward'] },
 	},
 	'ChannelController': {
 		'ChangeChannel': { 

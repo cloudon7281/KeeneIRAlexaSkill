@@ -69,6 +69,32 @@ def verify_devices(devices, database):
             logger.error("Device %s has incorrect manu %s", device['friendly_name'], manu)
             bad_device = True
 
+def find_target(device, targets):
+    # Check which target is associated with this device
+    if 'target' in device:
+        target = device['target']
+        logger.debug("This device is associated with target %s", target)
+    else:
+        target = 'primary'
+        logger.debug("No target specified - assume primary")
+
+    return targets[target]
+
+def get_repeats(device_details):
+    if 'IRrepeats' in device_details:
+        repeats = device_details['IRrepeats']
+    else:
+        repeats = 0
+
+    return repeats
+
+def get_connected_device(user_devices, global_database, device):
+    next_device_name = device['connected_to']['next_device']
+    logger.debug("Next connected device is %s", next_device_name)
+    device  = find_device_from_friendly_name(user_devices, next_device_name)
+    device_details = find_user_device_in_DB(device, global_database)
+    return next_device_name, device, device_details
+
 def find_user_device_in_DB(device, database):
     # Given a user device, return the details in the device DB
     manu = device['manufacturer']
@@ -81,15 +107,3 @@ def find_device_from_friendly_name(devices, friendly_name):
         if d['friendly_name'] == friendly_name:
             return d
 
-def extract_token_from_request(request):
-    # Find the OAuth2 token from either a discovery or directive request.
-    locations = [ 'endpoint', 'payload' ]
-    token = None
-
-    for l in locations:
-        if l in request['directive']:
-            if 'scope' in request['directive'][l]:
-                token = request['directive'][l]['scope']['token']
-
-    logger.debug("Token passed in request = %s", token)
-    return token
