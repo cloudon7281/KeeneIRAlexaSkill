@@ -43,7 +43,7 @@ DEVICES =   {
                             'friendly_name': 'TV', 
                             'manufacturer': 'Humax',
                             'model': 'DTR-T2100',
-                            'target': 'primary',
+                            'target': 'secondary',
                             'connected_to': 
                             {
                                 'next_device': 'Receiver',

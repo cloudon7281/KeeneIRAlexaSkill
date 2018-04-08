@@ -159,9 +159,11 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 
 					command = {
 						'SingleIRCommand': {
-							'KIRA': device_details['IRcodes'][next_input], 
-							'target': find_target(device, targets),
-							'repeats': get_repeats(device_details)
+							'single': {
+								'KIRA': device_details['IRcodes'][next_input], 
+								'target': find_target(device, targets),
+								'repeats': get_repeats(device_details)
+							}
 						}
 					}
 
