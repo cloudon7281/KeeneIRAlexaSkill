@@ -61,6 +61,16 @@ DEVICES =   {
                             }
                         },
                         {
+                            'friendly_name': 'Dot', 
+                            'manufacturer': 'Amazon',
+                            'model': 'Echo Dot',
+                            'connected_to': 
+                            {
+                                'next_device': 'Receiver',
+                                'input': 'InputPVR'
+                            }
+                        },
+                        {
                             'friendly_name': 'Receiver', 
                             'manufacturer': 'Arcam',
                             'model': 'AVR360',
