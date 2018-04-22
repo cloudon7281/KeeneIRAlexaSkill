@@ -21,7 +21,7 @@ import logging
 logger = logging.getLogger()
 
 def SendToKIRA(target, mesg, repeat, repeatDelay):
-    logger.debug("Send to %s with repeat %d, delay %d; message %s", target, repeat, repeatDelay, mesg)
+    logger.debug("Send to %s with repeat %d, delay %.3f; message %s", target, repeat, repeatDelay, mesg)
 
     host, port = target.split(":")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
