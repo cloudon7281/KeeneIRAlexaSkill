@@ -29,9 +29,8 @@ def SendToKIRA(target, mesg, repeat, repeatDelay):
     sock.bind(('', int(port)))
     for i in range(repeat+1):
         logger.debug("Sending %s", mesg.encode('utf-8'))
-        print("Sending ", mesg.encode('utf-8'))
         sock.sendto(mesg.encode('utf-8'), (host, int(port)))
-        if i == repeat:
+        if i < repeat:
             time.sleep(repeatDelay)
     sock.close()
 

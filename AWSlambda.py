@@ -38,7 +38,7 @@ logger.setLevel(logging.DEBUG)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 REPEAT = 1
-DELAY = 0.04
+DELAY = 0.02
 PAUSE_BETWEEN_COMMANDS = 0.2
 
 
