@@ -96,7 +96,7 @@ def lambda_handler(request, context):
         # plus the global device DB from S3, and then write the mapped activity
         # responses back to S3.
         # If this is a directive, we read the activity responses.
-        logger.debug("Reading from S3 - not yet implemneted")
+        logger.debug("Reading from S3 - not yet implemented")
 
     if req_is_discovery:
         response = reply_to_discovery(endpoints)

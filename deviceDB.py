@@ -23,6 +23,14 @@
 
 
 DEVICE_DB = {
+                'Nintendo': {
+                    'Wii U': {
+                        'roles': { 'AV_source' },
+                        'supports': { },
+                        'IRcodes': {             
+                        },                        
+                    }
+                },
                 'Panasonic': {
                     'DMP-BDT110EB': {
                         'roles': { 'AV_source' },
@@ -94,7 +102,7 @@ DEVICE_DB = {
                         },
                     },  
                     'Echo Dot': {
-                        'roles': { 'AV_source' },
+                        'roles': { 'A_source' },
                         'supports': { },
                         'IRcodes': {             
                         },

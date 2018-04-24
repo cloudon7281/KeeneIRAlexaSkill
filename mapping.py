@@ -23,9 +23,10 @@ logger = logging.getLogger()
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 
-def find_capabilities(user_devices, root_device, global_database):
+def find_capabilities(user_devices, root_device, global_database, is_audio):
 	# Identify the set of capabilities supported for a particular activity
 	logger.debug("Find the set of capabilities for the activity rooted in %s", root_device['friendly_name'])
+	logger.debug("Is the activity audio only? %d", is_audio)
 	capabilities = {}
 	device = root_device
 	device_details = find_user_device_in_DB(device, global_database)
@@ -37,6 +38,9 @@ def find_capabilities(user_devices, root_device, global_database):
 
 		if 'connected_to' in device:
 			_, device, device_details = get_connected_device(user_devices, global_database, device)
+			if is_audio and ('display' in device_details['roles']):
+				logger.debug("Connected to a display, but audio only source")
+				break
 		else:
 			logger.debug("Reached end of activity chain")
 			break			
@@ -45,7 +49,7 @@ def find_capabilities(user_devices, root_device, global_database):
 	return capabilities
 
 
-def construct_command_sequence(user_devices, root_device, global_database, capability, directive, instructions, targets):
+def construct_command_sequence(user_devices, root_device, global_database, capability, directive, instructions, targets, is_audio):
 	# Construct the sequence of commands for an entire activity corresponding to
 	# particular directive of a particular capability.
 	# The instructions are a dictionary of commands to be interpreted when a
@@ -83,6 +87,7 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 	commands = []
 
 	logger.debug("Finding set of commands for capability %s, directive %s for all relevant devices", capability, directive)
+	logger.debug("Is the activity audio only? %d", is_audio)
 
 	for instruction in instructions:
 		logger.debug("This instruction is %s", instruction)
@@ -142,6 +147,9 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 
 				if 'connected_to' in device:
 					_, device, device_details = get_connected_device(user_devices, global_database, device)
+					if is_audio and ('display' in device_details['roles']):
+						logger.debug("Connected to a display, but audio only source")
+						break
 				else:
 					break
 
@@ -154,6 +162,9 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 				if 'connected_to' in device:
 					next_input = device['connected_to']['input']
 					next_device_name, device, device_details = get_connected_device(user_devices, global_database, device)
+					if is_audio and ('display' in device_details['roles']):
+						logger.debug("Connected to a display, but audio only source")
+						break
 
 					logger.debug("Need to set %s to input %s", next_device_name, next_input)
 
@@ -201,7 +212,11 @@ def map_user_devices(user_devices, global_database):
 
 		device_details = find_user_device_in_DB(device, global_database)
 
-		if 'AV_source' in device_details['roles']:
+		is_video_source = ('AV_source' in device_details['roles'])
+		is_audio_source = ('A_source' in device_details['roles'])
+		is_source = (is_video_source or is_audio_source)
+
+		if is_source:
 			logger.debug("It's a source; map it to an endpoint")
 			
 			# XXX endpoint id should be unique
@@ -209,11 +224,10 @@ def map_user_devices(user_devices, global_database):
 			manufacturer = device['manufacturer']
 			endpoint = new_endpoint(endpoint_id, manufacturer)
 
-
 			# We now need to add the set of capabilities this activity 
 			# support, which is the union of all those supported by
 			# the chain of connected devices.
-			capabilities = find_capabilities(devices, device, global_database)
+			capabilities = find_capabilities(devices, device, global_database, is_audio_source)
 			
 			# Now go through the capabilities, and as well as constructing the
 			# appropriate discovery response construct the set of commands for
@@ -231,7 +245,7 @@ def map_user_devices(user_devices, global_database):
 				directives = CAPABILITY_DIRECTIVES[capability]
 
 				for directive in directives:
-					commands = construct_command_sequence(devices, device, global_database, capability, directive, directives[directive], targets)
+					commands = construct_command_sequence(devices, device, global_database, capability, directive, directives[directive], targets, is_audio_source)
 					directive_responses[endpoint_id][capability][directive] = commands
 
 			# Add the constructed endpoint info to what we return

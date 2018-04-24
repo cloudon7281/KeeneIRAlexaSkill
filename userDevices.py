@@ -51,7 +51,7 @@ DEVICES =   {
                             }
                         },
                         {
-                            'friendly_name': 'Amazon', 
+                            'friendly_name': 'Firestick', 
                             'manufacturer': 'Amazon',
                             'model': 'Firestick',
                             'connected_to': 
@@ -68,6 +68,16 @@ DEVICES =   {
                             {
                                 'next_device': 'Receiver',
                                 'input': 'InputPVR'
+                            }
+                        },
+                        {
+                            'friendly_name': 'Wii', 
+                            'manufacturer': 'Nintendo',
+                            'model': 'Wii U',
+                            'connected_to': 
+                            {
+                                'next_device': 'Receiver',
+                                'input': 'InputAV'
                             }
                         },
                         {
