@@ -115,7 +115,7 @@ DEVICES =   {
                             }
                         },
                         {
-                            'friendly_name': 'Amazon', 
+                            'friendly_name': 'Firestick', 
                             'manufacturer': 'Amazon',
                             'model': 'Firestick',
                             'connected_to': 
