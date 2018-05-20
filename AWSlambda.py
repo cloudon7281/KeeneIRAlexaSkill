@@ -23,7 +23,7 @@ import requests
 import copy
 
 from userDevices import DEVICES
-from alexaSchema import DISCOVERY_RESPONSE, DIRECTIVE_RESPONSE, CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES
+from alexaSchema import DISCOVERY_RESPONSE
 from deviceDB import DEVICE_DB
 
 from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
@@ -31,6 +31,7 @@ from AWSutilities import extract_token_from_request, unpack_request
 from LWAauth import get_user_from_token
 from mapping import map_user_devices
 from KIRAIO import SendToKIRA
+from response import construct_response
 
 # Logger boilerplate
 logger = logging.getLogger()
@@ -220,34 +221,6 @@ def handle_non_discovery(request, directive_responses):
 
         time.sleep(PAUSE_BETWEEN_COMMANDS)        
                    
-    response = DIRECTIVE_RESPONSE
-
-    prop = CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES[interface]
-    prop['timeOfSample'] = get_utc_timestamp()
-
-    # Depending on the interface/directive, need to construct an appropriate
-    # value field. 
-    # XXX this should be data driven, but for now do in code, because frankly
-    # the API is all over the place here.
-    if interface == 'PowerController':
-        if directive == 'TurnOn':
-            prop['value'] = "ON"
-        else:
-            prop['value'] = "OFF"
-    elif interface == 'ChannelController':
-        prop['value'] = request['directive']['payload']['channel']
-    elif interface == 'StepSpeaker':
-        prop = {}
-    elif interface == 'PlaybackController':
-        prop = {}
-
-    if prop == {}:
-        response['context']['properties'] = [ ]
-    else:
-        response['context']['properties'] = [ prop ]
-    response['event']['header']['messageId'] = get_uuid()
-    response['event']['header']['correlationToken'] = request['directive']['header']['correlationToken']
-    response['event']['endpoint'] = request['directive']['endpoint']
+    response = construct_response(request)
 
     return response
-
