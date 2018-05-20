@@ -106,17 +106,20 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 				if capability in device_details['supports']:
 					logger.debug("Device %s supports the %s capability", device['friendly_name'], capability)
 
+					output_cmd = {}
+					output_cmd[instruction]	= {}
+
 					# IRCommands are a flat list of synonyms.  StepIRCommands are two flat lists,
 					# one for +ve and one for -ve.  Loop accordingly.
 					if instruction == 'SingleIRCommand':
 						index = [ 'single' ]
 					elif instruction == 'StepIRCommands':
 						index = [ '+ve', '-ve' ]
+						logger.debug("INSTRUCTION IS %s", instruction)
+						logger.debug("StepIRCommmands should check for key %s", instructions[instruction]['key'])
+						output_cmd[instruction]['key'] = instructions[instruction]['key']
 					else:
 						index = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]
-
-					output_cmd = {}
-					output_cmd[instruction]	= {}
 
 					for i in index:	
 						if i == 'single':

@@ -174,7 +174,8 @@ def handle_non_discovery(request, directive_responses):
                 # In this case we need to extract the value N in the payload
                 # then send either the +ve or -ve command N times.
                 # XXX need to generalise payload location from AdjustVolume
-                steps = request['directive']['payload']['volumeSteps']
+                key = command_tuple[verb]['key']
+                steps = request['directive']['payload'][key]
                 logger.debug("Adjustment to make: %d", steps)
 
                 if steps > 0:

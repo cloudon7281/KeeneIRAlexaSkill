@@ -122,10 +122,18 @@ CAPABILITY_DIRECTIVES = {
 				'9': ['9'],
 			},
 		},
+        'SkipChannels': {
+            'StepIRCommands': {
+                'key': 'channelCount',
+                '+ve': [ 'ChannelUp' ],
+                '-ve': [ 'ChannelDown' ]
+            }
+        }
 	},
 	'StepSpeaker': { 
 		'AdjustVolume': { 
 			'StepIRCommands': {
+                'key': 'volumeSteps',
 				'+ve': [ 'VolumeUp' ],
 				'-ve': [ 'VolumeDown' ]
 			}
