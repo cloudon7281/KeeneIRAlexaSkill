@@ -24,15 +24,16 @@
 DEVICES =   {
                 'amzn1.account.AGY6FJTLLYJH6EYDMHWXLQSUJQZQ': {
                     'targets': {
-                        'primary': 'cloudon7281.ddns.net:65432',
-                        'secondary': 'cloudon7281.ddns.net:65433'
+                        'targeta': 'cloudon7281.ddns.net:65432',
+                        'targetb': 'cloudon7281.ddns.net:65433',
+                        'targetc': 'cloudon7281.ddns.net:65434'
                     },
                     'devices': [
                         {
                             'friendly_name': 'Blu-ray', 
-                            'manufacturer': 'Panasonic',
-                            'model': 'DMP-BDT110EB',
-                            'target': 'primary',
+                            'manufacturer': 'Oppo',
+                            'model': 'BDP-83',
+                            'target': 'targeta',
                             'connected_to': 
                             {
                                 'next_device': 'Receiver',
@@ -43,7 +44,7 @@ DEVICES =   {
                             'friendly_name': 'TV', 
                             'manufacturer': 'Humax',
                             'model': 'DTR-T2100',
-                            'target': 'secondary',
+                            'target': 'targetb',
                             'connected_to': 
                             {
                                 'next_device': 'Receiver',
@@ -84,7 +85,7 @@ DEVICES =   {
                             'friendly_name': 'Receiver', 
                             'manufacturer': 'Arcam',
                             'model': 'AVR360',
-                            'target': 'primary',
+                            'target': 'targetc',
                             'connected_to': 
                             {
                                 'next_device': 'Monitor',
@@ -95,7 +96,7 @@ DEVICES =   {
                             'friendly_name': 'Monitor', 
                             'manufacturer': 'Pioneer',
                             'model': 'PDP-LX508D',
-                            'target': 'secondary'
+                            'target': 'targetb'
                         }
                     ]
                 },
