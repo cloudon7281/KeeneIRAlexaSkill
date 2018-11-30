@@ -41,9 +41,20 @@ DEVICES =   {
                             }
                         },
                         {
+                            'friendly_name': 'CD', 
+                            'manufacturer': 'Oppo',
+                            'model': 'BDP-83-CD',
+                            'target': 'targeta',
+                            'connected_to': 
+                            {
+                                'next_device': 'Receiver',
+                                'input': 'InputCD'
+                            }
+                        },
+                        {
                             'friendly_name': 'TV', 
-                            'manufacturer': 'Humax',
-                            'model': 'DTR-T2100',
+                            'manufacturer': 'Virgin',
+                            'model': 'Hub-3',
                             'target': 'targetb',
                             'connected_to': 
                             {
