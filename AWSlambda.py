@@ -202,7 +202,12 @@ def handle_non_discovery(request, directive_responses):
                     if key1 in payload:
                         for key2 in [ 'number', 'name']:
                             if key2 in payload[key1]:
-                                number = payload[key1][key2]
+                                if key2 == 'number':
+                                    number = payload[key1][key2]
+                                else:
+                                    name = payload[key1][key2]
+                                    number = str(command_tuple[verb]['NameMap'][name])
+                                    logger.debug("Channel name is %s; number is %s", name, number)
 
                 if number == -1:
                     logger.error("Can't extract channel number from directive!")
