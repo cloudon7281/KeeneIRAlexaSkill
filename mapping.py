@@ -64,7 +64,7 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 	#                     interpreted as above.
 	#
 	#  DigitsIRComamnds - Directive is a number to be converted to a sequence
-	#                     of IR commands for each deimal digit.  Instructions
+	#                     of IR commands for each decimal digit.  Instructions
 	#                     is a dict with list of possible commands for each 
 	#					  digit.
 	#
@@ -121,6 +121,11 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 					else:
 						index = [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ]
 
+						if 'UseNameMap' in instructions[instruction]:
+							map = instructions[instruction]['UseNameMap']
+							logger.debug("This instruction for this directive can accept name map %s", map)
+							output_cmd[instruction]['NameMap'] = device_details[map].copy()
+
 					for i in index:	
 						if i == 'single':
 							command_list = instructions[instruction]
@@ -143,7 +148,6 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 										'repeats': get_repeats(device_details)
 										}
 									found = True
-
 					commands.append(output_cmd)		
 				else:
 					logger.debug("...doesn't support this capability")			
