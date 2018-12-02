@@ -124,7 +124,9 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 						if 'UseNameMap' in instructions[instruction]:
 							map = instructions[instruction]['UseNameMap']
 							logger.debug("This instruction for this directive can accept name map %s", map)
-							output_cmd[instruction]['NameMap'] = device_details[map].copy()
+							if map in device_details:
+								logger.debug("Map present")
+								output_cmd[instruction]['NameMap'] = device_details[map].copy()
 
 					for i in index:	
 						if i == 'single':
