@@ -11,7 +11,11 @@
 # language governing permissions and limitations under the License.
 
 
-import logging, pprint
+import logging
+import time
+import pprint
+
+from KIRAIO import SendToKIRA
 
 logger = logging.getLogger()
 pp = pprint.PrettyPrinter(indent=2, width = 200)

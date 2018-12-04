@@ -30,7 +30,6 @@ from AWSutilities import extract_token_from_request, unpack_request
 from LWAauth import get_user_from_token
 from mapping import model_user
 from runCommand import run_command
-from KIRAIO import SendToKIRA
 from response import construct_response
 
 # Logger boilerplate
@@ -134,13 +133,13 @@ def handle_non_discovery(request, command_sequences):
     # }
 
     # Extract the key fields from the request and check it's one we recognise
-    interface, directive, payload, endpoint_id = unpack_request(request)
-    verify_request(command_sequences, endpoint_id, interface, directive)
+    capability, directive, payload, endpoint_id = unpack_request(request)
+    verify_request(command_sequences, endpoint_id, capability, directive)
 
-    logger.info("Received directive %s on interface %s for endpoint %s", directive, interface, endpoint_id)
+    logger.info("Received directive %s on capability %s for endpoint %s", directive, capability, endpoint_id)
 
     # Get the list of commands we need to respond to this directive
-    commands_list = directive_responses[endpoint_id][interface][directive]
+    commands_list = command_sequences[endpoint_id][capability][directive]
 
     logger.info("Commands to execute:\n%s", pp.pformat(commands_list))
 

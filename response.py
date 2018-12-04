@@ -24,7 +24,7 @@ def construct_response(request):
 	#
     # This should be data driven, but for now do in code, because frankly
     # the API is all over the place here.
-    interface, directive, endpoint_id = unpack_request(request)
+    interface, directive, payload, endpoint_id = unpack_request(request)
 
     response = DIRECTIVE_RESPONSE
 
@@ -40,7 +40,7 @@ def construct_response(request):
             prop['value'] = "OFF"
     elif interface == 'ChannelController':
         if directive == 'ChangeChannel':
-            prop['value'] = request['directive']['payload']['channel']
+            prop['value'] = payload['channel']
     elif interface == 'StepSpeaker':
         prop = {}
     elif interface == 'PlaybackController':
