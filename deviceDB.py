@@ -244,7 +244,7 @@ DEVICE_DB = {
                             'FastForward': 'K 2609 0352 0386 037E 036D 06DF 06FF 06F7 06E6 06DF 071B 037E 036E 06DE 06FF 06DF 0386 0366 2000',
                         },
                         'ChannelList': {
-                            'BBC 1': 108,   # working
+                            'BBC 1': 101,   # working
                             'sky 1': 109,   
                             'BBC 2': 162,   # working
                             'ITV': 113,     # not working - does channel down
