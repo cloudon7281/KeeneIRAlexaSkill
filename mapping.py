@@ -102,7 +102,9 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 						if 'UseNameMap' in generic_commands[primitive]:
 							map = generic_commands[primitive]['UseNameMap']
 							logger.debug("This primitive for this directive can accept name map %s", map)
-							output_cmd[primitive]['NameMap'] = device_details[map].copy()
+							if map in device_details:
+								logger.debug("Map present")
+								output_cmd[primitive]['NameMap'] = device_details[map].copy()
 
 					for i in index:	
 						if i == 'single':

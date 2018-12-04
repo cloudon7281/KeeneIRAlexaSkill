@@ -35,7 +35,7 @@ from response import construct_response
 
 # Logger boilerplate
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 PAUSE_BETWEEN_COMMANDS = 0.2
