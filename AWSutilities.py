@@ -38,7 +38,8 @@ def unpack_request(request):
     # Strip off the 'Alexa.' at start of the string
     interface=alexa_interface[6:]
     directive = request["directive"]["header"]["name"]
+    payload = request["directive"]["payload"]
     endpoint_id = request["directive"]["endpoint"]["endpointId"]
 
-    return interface, directive, endpoint_id
+    return interface, directive, payload, endpoint_id
 

@@ -15,7 +15,7 @@
 import logging
 import time
 import uuid
-from userDevices import DEVICES
+from userDetails import USER_DETAILS
 
 logger = logging.getLogger()
 
@@ -27,25 +27,25 @@ def get_uuid():
 
 def verify_static_user(user):
     # Check we know about this user
-    if user in DEVICES:
+    if user in USER_DETAILS:
         logger.debug("Recognise user %s", user)
     else:
         logger.error("Don't recognise user %s", user)
 
-def verify_request(responses, endpoint, interface, directive):
+def verify_request(primitives, endpoint, capability, directive):
     # Check we know about this endpoint
-    if endpoint in responses:
+    if endpoint in primitives:
         logger.debug("Recognise endpoint %s", endpoint)
 
-        if interface in responses[endpoint]:
-            logger.debug("Recognise interface %s", interface)
+        if capability in primitives[endpoint]:
+            logger.debug("Recognise capability %s", capability)
 
-            if directive in responses[endpoint][interface]:
+            if directive in primitives[endpoint][capability]:
                 logger.debug("Recognise directive %s", directive)
             else:
                 logger.error("Don't recognise directive %s", directive)
         else:
-            logger.error("Don't recognise interface %s", interface)
+            logger.error("Don't recognise capability %s", capability)
     else:
         logger.error("Don't recognise endpoint %s", endpoint)
 

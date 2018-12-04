@@ -22,14 +22,14 @@ import pprint
 import requests
 import copy
 
-from userDevices import DEVICES
+from userDetails import USER_DETAILS
 from alexaSchema import DISCOVERY_RESPONSE
-from deviceDB import DEVICE_DB
 
 from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
 from AWSutilities import extract_token_from_request, unpack_request
 from LWAauth import get_user_from_token
-from mapping import map_user_devices
+from mapping import model_user
+from runCommand import run_command
 from KIRAIO import SendToKIRA
 from response import construct_response
 
@@ -38,8 +38,6 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
-REPEAT = 1
-DELAY = 0.02
 PAUSE_BETWEEN_COMMANDS = 0.2
 
 
@@ -91,7 +89,7 @@ def lambda_handler(request, context):
 
         # Map the user devices to endpoint and discovery information using
         # static files.
-        endpoints, directive_responses = map_user_devices(DEVICES[user], DEVICE_DB)
+        endpoints, command_sequences = model_user(USER_DETAILS[user])
     else:
         # If this is a discovery, we need to read the user's devices object 
         # plus the global device DB from S3, and then write the mapped activity
@@ -102,7 +100,7 @@ def lambda_handler(request, context):
     if req_is_discovery:
         response = reply_to_discovery(endpoints)
     else:
-        response = handle_non_discovery(request, directive_responses)
+        response = handle_non_discovery(request, command_sequences)
 
     logger.info("Response:")
     logger.info(json.dumps(response, indent=4, sort_keys=True))
@@ -121,36 +119,23 @@ def reply_to_discovery(endpoints):
                     
     return response
 
-def handle_non_discovery(request, directive_responses):
+def handle_non_discovery(request, command_sequences):
     # We have received a directive for some capability interface, which we have
     # to now act on.
-    # The responses structure is a dict telling us what to do.  It is a nested
-    # dict with the following structure:
+    # The command_sequences structure is a dict telling us what to do.  It
+    # is a nested dict with the following structure:
     #
     # { endpoint:
-    #     { interface:
+    #     { capability:
     #         { directive:
-    #             [ list of commands ]
+    #             [ list of specific commands ]
     #         }
     #     }
     # }
-    #
-    # where the list of commands is a list of dicts with the following verbs
-    # as keys:
-    #
-    #   SingleIRCommand     - send a single KIRA command; value is struct with 
-    #                         IR sequence as value
-    #   StepIRCommands      - send N * up/down KIRA commands; value is a struct
-    #                         with +ve & -ve IR commands
-    #   DigitsIRCommands    - send sequence of KIRA commands corresponding to 
-    #                         digits of number in the payload; value is a struct
-    #                         with IR commands for each decimal digit
-    #   Pause               - pause for N seconds before sending next command;
-    #                         time to wait is the value
 
     # Extract the key fields from the request and check it's one we recognise
-    interface, directive, endpoint_id = unpack_request(request)
-    verify_request(directive_responses, endpoint_id, interface, directive)
+    interface, directive, payload, endpoint_id = unpack_request(request)
+    verify_request(command_sequences, endpoint_id, interface, directive)
 
     logger.info("Received directive %s on interface %s for endpoint %s", directive, interface, endpoint_id)
 
@@ -162,68 +147,7 @@ def handle_non_discovery(request, directive_responses):
     for command_tuple in commands_list:
         for verb in command_tuple:
             logger.debug("Verb to run: %s", verb)
-
-            if verb == 'SingleIRCommand':
-                # Send to KIRA the single command specified.
-                KIRA_string = command_tuple[verb]['single']['KIRA']
-                repeats = command_tuple[verb]['single']['repeats']
-                target = command_tuple[verb]['single']['target']
-                SendToKIRA(target, KIRA_string, repeats, DELAY)
-
-            elif verb == 'StepIRCommands':
-                # In this case we need to extract the value N in the payload
-                # then send either the +ve or -ve command N times.
-                # XXX need to generalise payload location from AdjustVolume
-                key = command_tuple[verb]['key']
-                steps = request['directive']['payload'][key]
-                logger.debug("Adjustment to make: %d", steps)
-
-                if steps > 0:
-                    index = '+ve'
-                else:
-                    index = '-ve'
-                
-                KIRA_string = command_tuple[verb][index]['KIRA']
-                target = command_tuple[verb][index]['target']
-                repeats = command_tuple[verb][index]['repeats']
-                
-                for n in range(0, abs(steps)):
-                    SendToKIRA(target, KIRA_string, repeats, DELAY)
-                    time.sleep(PAUSE_BETWEEN_COMMANDS)
-
-            elif verb == 'DigitsIRCommands':
-                # In this case we need to extract a decimal number in the 
-                # payload then send the sequence of IR commands corresponding
-                # to its digits.
-                # XXX need to generalise payload location from ChangeChannel
-                payload = request['directive']['payload']
-                number = -1
-                for key1 in [ 'channel', 'channelMetadata']:
-                    if key1 in payload:
-                        for key2 in [ 'number', 'name']:
-                            if key2 in payload[key1]:
-                                if key2 == 'number':
-                                    number = payload[key1][key2]
-                                else:
-                                    name = payload[key1][key2]
-                                    number = str(command_tuple[verb]['NameMap'][name])
-                                    logger.debug("Channel name is %s; number is %s", name, number)
-
-                if number == -1:
-                    logger.error("Can't extract channel number from directive!")
-                else:
-                    logger.debug("Number to send: %s", number)
-
-                    for digit in number:
-                        KIRA_string = command_tuple[verb][digit]['KIRA']
-                        target = command_tuple[verb][digit]['target']
-                        repeats = command_tuple[verb][digit]['repeats']
-                        SendToKIRA(target, KIRA_string, repeats, DELAY)
-                        time.sleep(PAUSE_BETWEEN_COMMANDS)
-
-            elif verb == 'Pause':
-                # Simply pause the appropriate period of time.
-                time.sleep(command_tuple[verb])
+            run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
 
         time.sleep(PAUSE_BETWEEN_COMMANDS)        
                    
