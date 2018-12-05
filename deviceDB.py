@@ -215,8 +215,8 @@ DEVICE_DB = {
                         'IRcodes': {             
                             '0': 'K 260B 0351 0386 037E 036E 06F7 06E6 06F8 0702 06DE 0387 037C 036F 037E 036E 0366 0387 037D 036E 037E 036E 037E 2000',
                             '1': 'K 260B 036B 036D 06F8 036D 0368 06FE 06DF 071A 06E0 0384 0368 0383 037D 036F 0368 0384 0380 036B 0380 0700 0368 2000',
-                            '2': 'K 260A 036C 036D 0380 036A 06FA 06E5 06FA 06FF 06F8 036E 037F 036D 0366 0386 037E 036E 037E 06E6 0715 2000',
-                            '3': 'K 260A 036C 036D 0380 036A 06FA 06E5 06FA 06FF 06F8 036E 037F 036D 0366 0386 037E 036E 037E 06E6 0715 2000',
+                            '2': 'K 260A 031F 03B9 0335 03BA 06C6 0733 06AA 074A 06AD 03B9 0332 039E 0350 03B8 0332 03D5 0332 071A 06C4 2000',
+                            '3': 'K 260B 0339 03A2 06DE 03B9 0335 0718 06C5 0730 0694 03B9 034D 03B9 0332 03BA 0336 03D2 0334 0718 034A 03BB 0331 2000',
                             '4': 'K 260A 036B 036D 0367 0384 06DF 071A 06F9 06E6 06DF 0386 0367 0384 0380 036B 037F 06E6 06FB 0386 0367 2000',
                             '5': 'K 260A 036B 036D 06DF 0386 037F 0701 06F9 06E5 06F7 036E 0380 036B 0380 036B 0380 06E5 06FB 06FF 0380 2000',
                             '6': 'K 260A 0369 036F 037C 0370 0712 06E7 06DE 0700 06DD 0387 037D 036F 037D 036F 0365 071B 037E 036F 06DC 2000',
@@ -244,34 +244,34 @@ DEVICE_DB = {
                             'FastForward': 'K 2609 0352 0386 037E 036D 06DF 06FF 06F7 06E6 06DF 071B 037E 036E 06DE 06FF 06DF 0386 0366 2000',
                         },
                         'ChannelList': {
-                            'BBC 1': 101,   # working
-                            'sky 1': 109,   
-                            'BBC 2': 162,   # working
-                            'ITV': 113,     # not working - does channel down
-                            'bbc four': 163,   # not working
-                            'SyFy': 165,    # mapped to skip channel
-                            'i. t. v. two': 176,   # not working
-                            'i. t. v. three': 177,
-                            'ITV 4': 178, #mapped to skip channel
-                            'comedy central': 181,
-                            'dave': 194,
-                            'sky arts': 206,
-                            'film four': 429,
-                            'sky sports news': 509,
-                            'sky sports mix': 510,
-                            'sky sports main event': 511,
-                            'sky sports premier league': 512,
-                            'sky sports cricket': 514,
-                            'sky sports golf': 515,
-                            'sky sports f. one': 516,
-                            'sky sports action': 517,       # not working - all lower case
-                            'sky sports arena': 518,
-                            'eurosport 1': 521,
-                            'eurosport 2': 522,
-                            'b. t. sport': 527,
-                            'bt sport': 528,
-                            'bt sport': 529,
-                            'bt sport espn': 534,
+                            'BBC 1': 101,          # working
+                            'sky one': 109,        # working
+                            'BBC 2': 162,          # working
+                            'stv': 113,            # working
+                            'bbc four': 163,       # working
+                            'science fiction': 165,# ?
+                            'i. t. v. two': 176,   # working
+                            'i. t. v. three': 177, # working
+                            'i. t. v. four': 178,  # ?
+                            'comedy central': 181, # working
+                            'dave': 194,           # working
+                            'sky arts': 206,       # working
+                            'film four': 429,      # working
+                            'sky sports news': 509,               # working
+                            'sky sports mix': 510,                # working
+                            'sky sports main': 511,               # ?
+                            'sky sports football': 512,           # ?
+                            'sky sports cricket': 514,            # working
+                            'sky sports golf': 515,               # working
+                            'sky sports f. one': 516,             # working
+                            'sky sports action': 517,             # working
+                            'sky sports arena': 518,              # working
+                            'eurosport 1': 521,                   # working
+                            'eurosport 2': 522,                   # working
+                            'b. t. sport': 527,                   # not working - channel down
+                            'bt sport 2': 528,
+                            'bt sport 3': 529,
+                            'bt sport espn': 534,                 # not working
                         },
                         'IRrepeats': 2,
                     },          
