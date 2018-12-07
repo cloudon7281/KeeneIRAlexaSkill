@@ -34,6 +34,28 @@ USER_DETAILS =  {
                                 'target': 'localhost',
                                 'connected_to': 
                                 {
+                                    'next_device': 'Receiver',
+                                    'input': 'InputAV'
+                                }
+                            },
+                            {
+                                'friendly_name': 'Asource', 
+                                'manufacturer': 'Test',
+                                'model': 'TestASource',
+                                'target': 'localhost',
+                                'connected_to': 
+                                {
+                                    'next_device': 'Receiver',
+                                    'input': 'InputA'
+                                }
+                            },
+                            {
+                                'friendly_name': 'Receiver', 
+                                'manufacturer': 'Test',
+                                'model': 'TestReceiver',
+                                'target': 'localhost',
+                                'connected_to': 
+                                {
                                     'next_device': 'Monitor',
                                     'input': 'InputHDMI1'
                                 }

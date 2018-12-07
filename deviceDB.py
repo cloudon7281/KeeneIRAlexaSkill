@@ -37,11 +37,38 @@ DEVICE_DB = {
                             'FastForward': 'TestAVSource: fast forward',
                         },
                     },
+                    'TestASource': {
+                        'roles': { 'A_source' },
+                        'supports': { 'PowerController', 
+                                      'PlaybackController' },
+                        'IRcodes': {
+                            'PowerToggle': 'TestASource: power toggle',
+                            'Pause': 'TestASource: pause',
+                            'Play': 'TestASource: play',
+                            'Stop': 'TestASource: stop',
+                            'Rewind': 'TestASource: rewind',
+                            'FastForward': 'TestASource: fast forward',
+                        },
+                    },
+                    'TestReceiver': {
+                        'roles': { 'AV_switch', 'speaker' },
+                        'supports': { 'PowerController', 
+                                      'StepSpeaker' },
+                        'IRcodes': {
+                            'PowerToggle': 'TestReceiver: power toggle',
+                            'VolumeUp': 'TestReceiver: volume up',
+                            'VolumeDown': 'TestReceiver: volume down',
+                            'Mute': 'TestReceiver: mute',
+                            'InputAV': 'TestReceiver: input for AV source',
+                            'InputA': 'TestReceiver: input for A only source',
+                        },
+                    },
                     'TestMonitor': {
                         'roles': { 'display' },
                         'supports': { 'PowerController' },
                         'IRcodes': {  
-                            'PowerToggle': 'TestMonitor: power toggle',
+                            'PowerOn': 'TestMonitor: power on',
+                            'PowerOff': 'TestMonitor: power off',
                             'InputHDMI1': 'TestMonitor: input HDMI1',
                         },
                     }

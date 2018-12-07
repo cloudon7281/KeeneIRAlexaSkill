@@ -88,7 +88,7 @@ def lambda_handler(request, context):
 
         # Map the user devices to endpoint and discovery information using
         # static files.
-        endpoints, command_sequences = model_user(USER_DETAILS[user])
+        discovery_response, command_sequences, endpoint_involvement = model_user(USER_DETAILS[user])
     else:
         # If this is a discovery, we need to read the user's devices object 
         # plus the global device DB from S3, and then write the mapped activity
@@ -97,7 +97,7 @@ def lambda_handler(request, context):
         logger.debug("Reading from S3 - not yet implemented")
 
     if req_is_discovery:
-        response = reply_to_discovery(endpoints)
+        response = reply_to_discovery(discovery_response)
     else:
         response = handle_non_discovery(request, command_sequences)
 
@@ -106,14 +106,14 @@ def lambda_handler(request, context):
 
     return response
 
-def reply_to_discovery(endpoints):
+def reply_to_discovery(discovery_response):
     # Handle discovery requests.  This is straightforward: we have already 
     # mapped the users set of devices to an auto-generated list of activities
     # (endpoints), so just return them.
     logger.info("Reply to discovery")
 
     response = DISCOVERY_RESPONSE
-    response['event']['payload']['endpoints'] = endpoints
+    response['event']['payload']['endpoints'] = discovery_response
     response['event']['header']['messageId'] = get_uuid()
                     
     return response

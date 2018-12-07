@@ -188,29 +188,77 @@ def find_capabilities(user_devices, root_device, global_database):
 	logger.debug("Find the set of capabilities for the activity rooted in %s", root_device['friendly_name'])
 	
 	capabilities = {}
+	device_list = []
 	
 	device = root_device
 	device_details = find_user_device_in_DB(device, global_database)
 	is_audio = ('A_source' in device_details['roles'])
 	logger.debug("Is the activity audio only? %d", is_audio)
+
+	device_list.append(root_device['friendly_name'])
 		
 	while True:
+		device_list
 		for capability in device_details['supports']:
 			logger.debug("Activity supports %s capability via device %s", capability, device['friendly_name'])
 			capabilities[capability] = 'supported'
 
 		if 'connected_to' in device:
-			_, device, device_details = get_connected_device(user_devices, global_database, device)
+			device_friendly_name, device, device_details = get_connected_device(user_devices, global_database, device)
+
+
 			if is_audio and ('display' in device_details['roles']):
 				logger.debug("Connected to a display, but audio only source")
 				break
+			else:
+				device_list.append(device_friendly_name)
 		else:
 			logger.debug("Reached end of activity chain")
 			break			
 
 	logger.debug("List of capabilities for this activity:\n%s", pp.pformat(capabilities))
-	return capabilities
+	logger.debug("Devices invovled in this activity:\n%s", pp.pformat(device_list))
+	return capabilities, device_list
 
+
+def get_power_toggle(user_devices, global_database):
+	# We need to understand (a) which devices are active in which endpoints and
+	# (b) whether they have sensible PowerOn/Off commands or just support the 
+	# useless PowerToggle (why?) which can result in us getting out of sync.
+	# We will later combine this with the current device status to ensure that
+	# we (a) turn off now-unused devices when switching between endpoints and
+	# (b) get the power polarity correct.
+	# device_power_map is a dict with form
+	# { 'device': {
+	#      'toggle': 'True/False',          # Is PowerToggle used?
+	#      'endpoints': {
+	#          '<endpoint>' : 'True/False', # Is device used in this endpoint?
+	#       }
+	#    }
+	# }
+	#
+	# We fill in the power toggle status here; endpoints are added as we find
+	# the capabilities.
+	device_power_map = {}
+
+	for this_device in user_devices:
+		logger.debug("User has device %s", this_device['friendly_name'])	
+
+		device_power_map[this_device['friendly_name']] = {}
+		this_device_map = device_power_map[this_device['friendly_name']]
+		this_device_map['endpoints'] = {}
+
+		device_details = find_user_device_in_DB(this_device, global_database)
+
+		# Does it use PowerToggle?
+		if 'PowerToggle' in device_details['IRcodes']:
+			logger.debug("Uses PowerToggle")
+			this_device_map['toggle'] = True
+		else:
+			logger.debug("Does not use PowerToggle")
+			this_device_map['toggle'] = False
+
+	return device_power_map
 
 def model_user(user_details):
 	# We construct both the definition of the endpoints (= activities)
@@ -227,8 +275,9 @@ def model_user(user_details):
 
 	verify_devices(user_devices, global_database)
 
-	endpoints = []
+	discovery_response = []
 	command_sequences = {}
+	device_power_map = get_power_toggle(user_devices, global_database)
 
 	for this_device in user_devices:
 		logger.debug("User has device %s", this_device['friendly_name'])	
@@ -268,7 +317,10 @@ def model_user(user_details):
 			# We now need to add the set of capabilities this activity 
 			# support, which is the union of all those supported by
 			# the chain of connected devices.
-			capabilities = find_capabilities(user_devices, this_device, global_database)
+			capabilities, device_list = find_capabilities(user_devices, this_device, global_database)
+
+			for device in device_list:
+				device_power_map[device]['endpoints'][endpoint_id] = True
 			
 			# Now go through the capabilities, and as well as constructing the
 			# appropriate discovery response construct the set of commands for
@@ -298,8 +350,10 @@ def model_user(user_details):
 					command_sequences[endpoint_id][capability][directive] = specific_commands
 
 			# Add the constructed endpoint info to what we return
-			endpoints.append(endpoint)
+			discovery_response.append(endpoint)
 
-	return endpoints, command_sequences
+	logger.debug("Device power map = %s", pp.pformat(device_power_map))
+
+	return discovery_response, command_sequences, device_power_map
 
 
