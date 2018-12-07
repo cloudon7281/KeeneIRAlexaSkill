@@ -23,6 +23,29 @@
 
 
 DEVICE_DB = {
+                'Test': {
+                    'TestAVSource': {
+                        'roles': { 'AV_source' },
+                        'supports': { 'PowerController', 
+                                      'PlaybackController' },
+                        'IRcodes': {
+                            'PowerToggle': 'TestAVSource: power toggle',
+                            'Pause': 'TestAVSource: pause',
+                            'Play': 'TestAVSource: play',
+                            'Stop': 'TestAVSource: stop',
+                            'Rewind': 'TestAVSource: rewind',
+                            'FastForward': 'TestAVSource: fast forward',
+                        },
+                    },
+                    'TestMonitor': {
+                        'roles': { 'display' },
+                        'supports': { 'PowerController' },
+                        'IRcodes': {  
+                            'PowerToggle': 'TestMonitor: power toggle',
+                            'InputHDMI1': 'TestMonitor: input HDMI1',
+                        },
+                    }
+                },
                 'Nintendo': {
                     'Wii U': {
                         'roles': { 'AV_source' },
@@ -38,7 +61,7 @@ DEVICE_DB = {
                                       'PlaybackController' },
                         'IRcodes': {
                             'Eject': 'K 2627 1123 11DD 019D 0244 019D 0244 019E 0243 019E 0243 019E 0243 019E 062A 019D 0244 019D 0246 019D 0244 019D 0243 019D 0244 019D 0244 0183 025E 0182 025E 0182 0244 019D 0244 019D 11F7 0184 062A 019E 062A 019E 062A 019E 0243 019E 062A 019D 0246 019C 0246 019D 0243 019E 0243 019E 0244 019D 0243 019E 0244 019D 0244 019D 062A 0183 062A 019E 062A 019E 062A 019E 062A 019E 062A 019E 062A 019E 2000',
-                            'PowerToggle': '#IR code name:K 2627 1172 118D 01D1 0211 01D0 0210 01D1 0210 01D0 0211 01D0 0210 01CF 05F7 01D0 0212 01E9 01F7 01D0 0211 01E8 01F8 01D0 0210 01D1 0210 01B6 0210 01D0 0210 01E9 01F8 01D0 0210 01CF 11C5 01B6 05F7 01EC 05DC 01D1 05F6 01D0 0212 01CF 0211 01CF 0211 01D0 0211 01D0 0211 01E8 01F7 01E9 01F8 01E9 01F7 01D0 0211 01D0 05F6 01D1 05DC 01D1 05F7 01D0 05F7 01D0 05F7 01D1 05F7 01D1 05F7 01CF 05F8 01D0 2000',
+                            'PowerToggle': 'K 2627 1172 118D 01D1 0211 01D0 0210 01D1 0210 01D0 0211 01D0 0210 01CF 05F7 01D0 0212 01E9 01F7 01D0 0211 01E8 01F8 01D0 0210 01D1 0210 01B6 0210 01D0 0210 01E9 01F8 01D0 0210 01CF 11C5 01B6 05F7 01EC 05DC 01D1 05F6 01D0 0212 01CF 0211 01CF 0211 01D0 0211 01D0 0211 01E8 01F7 01E9 01F8 01E9 01F7 01D0 0211 01D0 05F6 01D1 05DC 01D1 05F7 01D0 05F7 01D0 05F7 01D1 05F7 01D1 05F7 01CF 05F8 01D0 2000',
                             'Pause': 'K 2627 1158 118E 01D2 020F 01EA 01F7 01E7 01F8 01EA 01F7 01D1 0210 01EC 05DA 01D2 0210 01D1 0210 01D0 0210 01EA 01F6 01D0 0211 01D1 020F 01D2 020F 01EA 01F7 01E8 01F8 01B7 022A 01CB 11AE 01D3 05F5 01D2 05DB 01D1 05F6 01D2 0210 01E9 01F7 01D0 05F7 01D1 0210 01E9 01F8 01D0 05F6 01D2 05F6 01EC 01F6 01EA 01F7 01CF 05F7 01D2 01F6 01D2 05F5 01D1 05F6 01D1 0211 01D0 0210 01D0 05F7 01D1 05F7 01D0 2000',
                             'Play': 'K 2627 1157 118E 01D3 020F 01D1 0210 01EA 01F6 01E9 01F8 01D0 0210 01E9 05DD 01E2 01FE 01D3 020F 01E8 01F8 01D2 020E 01D2 020F 01D0 0211 01D1 020F 01EA 01F7 01D1 020F 01D1 0210 01D1 11AA 01D1 05F6 01D2 05F6 01D0 05DC 01D2 0210 01EA 01F6 01EA 01F6 01D2 05F6 01E9 01F8 01E8 05DD 01EA 01F7 01D1 0210 01E5 01FC 01D0 05F6 01EC 05DC 01D1 0210 01D1 05F6 01B8 020F 01D1 05F6 01D0 05F7 01D2 05F6 01D1 2000',
                             'Stop': 'K 2627 1157 11A9 01D2 0210 01B8 0228 01D3 020C 01B7 0210 01D2 020F 01E9 05DC 01EA 01F7 01E9 01F7 01D1 0210 01D1 0210 01D1 020F 01D0 0211 01D0 0210 01E9 01F8 01E9 01F7 01D1 0210 01D0 11AA 01D2 05F6 01D1 05F6 01D2 05F6 01D1 0210 01D1 05F6 01D1 05DC 01CF 0212 01CF 0211 01D1 05F6 01D2 0210 01CF 0211 01D1 020F 01D0 0211 01D0 0210 01E9 05DD 01E9 05DD 01E9 01F8 01E8 05DE 01B6 05F7 01E9 05DD 01D0 2000',

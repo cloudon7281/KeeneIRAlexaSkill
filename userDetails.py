@@ -22,6 +22,30 @@
 # code.
 
 USER_DETAILS =  {
+                    'testuser': {
+                        'targets': {
+                            'localhost': '127.0.0.1:60000'
+                        },
+                        'devices': [
+                            {
+                                'friendly_name': 'AVsource', 
+                                'manufacturer': 'Test',
+                                'model': 'TestAVSource',
+                                'target': 'localhost',
+                                'connected_to': 
+                                {
+                                    'next_device': 'Monitor',
+                                    'input': 'InputHDMI1'
+                                }
+                            },
+                            {
+                                'friendly_name': 'Monitor', 
+                                'manufacturer': 'Test',
+                                'model': 'TestMonitor',
+                                'target': 'localhost'
+                            }
+                        ]
+                    },
                     'amzn1.account.AGY6FJTLLYJH6EYDMHWXLQSUJQZQ': {
                         'targets': {
                             'targeta': 'cloudon7281.ddns.net:65432',
