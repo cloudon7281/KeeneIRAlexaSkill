@@ -39,12 +39,20 @@ pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 PAUSE_BETWEEN_COMMANDS = 0.2
 
+DEVICE_STATE = {}
+
+def set_initial_state():
+    # Quick hack to set state of all devices to 'off' at start of run
+    for d in USER_DETAILS['testuser']['devices']:
+        DEVICE_STATE[d['friendly_name']] = False
+
 
 def lambda_handler(request, context):
     # Main lambda handler.  We simply switch on the directive type.
 
     logger.info("Received request")
     logger.info(json.dumps(request, indent=4))
+    logger.info("Current device state: %s", pp.pformat(DEVICE_STATE))
 
     if 'TEST_USER' in os.environ:
         # Currently we are testing with a hard-coded user name
@@ -99,7 +107,7 @@ def lambda_handler(request, context):
     if req_is_discovery:
         response = reply_to_discovery(discovery_response)
     else:
-        response = handle_non_discovery(request, command_sequences)
+        response = handle_non_discovery(request, command_sequences, endpoint_involvement)
 
     logger.info("Response:")
     logger.info(json.dumps(response, indent=4, sort_keys=True))
@@ -118,7 +126,7 @@ def reply_to_discovery(discovery_response):
                     
     return response
 
-def handle_non_discovery(request, command_sequences):
+def handle_non_discovery(request, command_sequences, endpoint_involvement):
     # We have received a directive for some capability interface, which we have
     # to now act on.
     # The command_sequences structure is a dict telling us what to do.  It
@@ -131,6 +139,13 @@ def handle_non_discovery(request, command_sequences):
     #         }
     #     }
     # }
+    #
+    # The endpoint_involvement dict tells us which devices are needed for
+    # which endpoints, plus for each device whether or not it has separate
+    # on/off commands or (evil) a single power toggle.  We use the combo of
+    # current state, device involvement and toggle vs. on/off to decide
+    # (a) whether to skip any commmands and (b) any additional commands
+    # to send for devices that should be switched off.
 
     # Extract the key fields from the request and check it's one we recognise
     capability, directive, payload, endpoint_id = unpack_request(request)
@@ -146,7 +161,15 @@ def handle_non_discovery(request, command_sequences):
     for command_tuple in commands_list:
         for verb in command_tuple:
             logger.debug("Verb to run: %s", verb)
-            run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
+
+            # Before issuing this command, check in case we should skip it.
+            # We do so if:
+            # - the device has toggle rather than on/off      and
+            # - this is a TurnOn and the current state is on  or
+            if not skip_command(verb, command_tuple[verb], endpoint_involvement[device], DEVICE_STATE[device]):
+                run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
+            else:
+                logger.debug("Already in correct state: skipping")   
 
         time.sleep(PAUSE_BETWEEN_COMMANDS)        
                    

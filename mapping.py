@@ -24,6 +24,21 @@ logger = logging.getLogger()
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 
+def skip_command(verb, command_tuple, device_map, device_state):
+	# Determine whether to skip sending a command.
+    # We do so if:
+    # - the device has toggle rather than on/off      and
+    # - this is a TurnOn and the current state is on  or
+    skip = False
+
+    if verb == 'SingleIRCommand':
+	    device = command_tuple['single']['device']
+	    if device_map['toggle']:
+	        logger.debug("This is a single command for a device supporting power toggle")
+	        if (directive == 'Turn' and DEVICE_STATE[device] == True) or (directive == 'TurnOff' and DEVICE_STATE[device] == False):
+	            logger.debug("Already in correct state: skipping")   
+
+
 def construct_command_sequence(user_devices, root_device, global_database, capability, generic_commands, targets):
 	# Construct the sequence of commands for an entire activity corresponding to
 	# particular directive of a particular capability.
@@ -122,10 +137,13 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 									logger.debug("Device %s supports command %s", device['friendly_name'], command)
 
 									# Only want to find one command e.g. PowerOn or PowerToggle
+									# We include the device name as we will need that when
+									# later figuring out what to turn on/off
 									output_cmd[primitive][i] = { 
 										'KIRA': device_details['IRcodes'][command], 
 										'target': find_target(device, targets),
-										'repeats': get_repeats(device_details)
+										'repeats': get_repeats(device_details),
+										'device': device['friendly_name']
 										}
 									found = True
 					commands.append(output_cmd)		
