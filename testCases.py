@@ -29,7 +29,7 @@ Discover = {
   }
 }
 
-TurnOnSource = {
+TurnOnAVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.PowerController",
@@ -50,7 +50,7 @@ TurnOnSource = {
   }
 }
 
-TurnOffSource = {
+TurnOffAVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.PowerController",
@@ -71,7 +71,7 @@ TurnOffSource = {
   }
 }
 
-PauseSource = {
+PauseAVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.PlaybackController",
@@ -92,7 +92,7 @@ PauseSource = {
   }
 }
 
-VolDown5Source = {
+VolDown5AVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.StepSpeaker",
@@ -113,3 +113,19 @@ VolDown5Source = {
   }
 }
 
+
+testCases = [
+  { 
+    "title": "Discover",
+    "expect_kira_commands": False,
+    "directive": Discover,
+    "expected_commands": None, 
+  },
+  { 
+    "title": "Turn on AV source - all devices start off",
+    "expect_kira_commands": True,
+    "directive": TurnOnAVSource,
+    "expected_kira_commands": [ "some wibble" ]
+  }
+]
+  
