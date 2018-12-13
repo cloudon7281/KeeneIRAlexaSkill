@@ -125,7 +125,6 @@ testCases = [
     "title": "Turn on AV source - all devices start off",
     "expect_kira_commands": True,
     "directive": TurnOnAVSource,
-    "expected_kira_commands": [ "some wibble" ]
+    "expected_kira_commands": [ "TestAVSource: power toggle", "TestMonitor: power toggle", "TestMonitor: input HDMI1" ]
   }
 ]
-  

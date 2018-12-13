@@ -39,17 +39,15 @@ class testKIRA:
 			p.terminate()
 
 	def get_messages(self):
-		return message		while not empty:
-		try:
-			print("Calling get_message with timeout of 2")
-			message = self.q.get(timeout = 2)
-			kira_command = sink.get_message()
-			print("Got message", kira_command)
-			kira_commands.append(kira_command)
-		except:
-			print("Hit exception")
-			empty = True
-
+		kira_commands = []
+		empty = False
+		while not empty:
+			try:
+				kira_command = self.q.get(timeout = 2).decode()
+				kira_commands.append(kira_command)
+			except:
+				empty = True
+		return kira_commands
 
 
 def listener(q, port):
