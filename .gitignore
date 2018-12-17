@@ -5,7 +5,6 @@
 __pycache__/*
 *.zip
 *.log
-test.py
 dotest.cmd
 
 # Skill icons
