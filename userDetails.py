@@ -22,149 +22,171 @@
 # code.
 
 USER_DETAILS =  {
-                    'testuser': {
-                        'targets': {
-                            'localhost': '127.0.0.1:60000'
-                        },
-                        'devices': [
-                            {
-                                'friendly_name': 'AVsource', 
-                                'manufacturer': 'Test',
-                                'model': 'TestAVSource',
-                                'target': 'localhost',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Monitor',
-                                    'input': 'InputHDMI1'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Monitor', 
-                                'manufacturer': 'Test',
-                                'model': 'TestMonitor',
-                                'target': 'localhost'
-                            }
-                        ]
-                    },
-                    'amzn1.account.AGY6FJTLLYJH6EYDMHWXLQSUJQZQ': {
-                        'targets': {
-                            'targeta': 'cloudon7281.ddns.net:65432',
-                            'targetb': 'cloudon7281.ddns.net:65433',
-                            'targetc': 'cloudon7281.ddns.net:65434'
-                        },
-                        'devices': [
-                            {
-                                'friendly_name': 'Blu-ray', 
-                                'manufacturer': 'Oppo',
-                                'model': 'BDP-83',
-                                'target': 'targeta',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Receiver',
-                                    'input': 'InputBR'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Compact Disc', 
-                                'manufacturer': 'Oppo',
-                                'model': 'BDP-83-CD',
-                                'target': 'targeta',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Receiver',
-                                    'input': 'InputCD'
-                                }
-                            },
-                            {
-                                'friendly_name': 'TV', 
-                                'manufacturer': 'Virgin',
-                                'model': 'Hub-3',
-                                'target': 'targetb',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Receiver',
-                                    'input': 'InputSAT'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Firestick', 
-                                'manufacturer': 'Amazon',
-                                'model': 'Firestick',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Receiver',
-                                    'input': 'InputVCR'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Dot', 
-                                'manufacturer': 'Amazon',
-                                'model': 'Echo Dot',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Receiver',
-                                    'input': 'InputPVR'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Wii', 
-                                'manufacturer': 'Nintendo',
-                                'model': 'Wii U',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Receiver',
-                                    'input': 'InputAV'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Receiver', 
-                                'manufacturer': 'Arcam',
-                                'model': 'AVR360',
-                                'target': 'targetc',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Monitor',
-                                    'input': 'InputHDMI1'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Monitor', 
-                                'manufacturer': 'Pioneer',
-                                'model': 'PDP-LX508D',
-                                'target': 'targetb'
-                            }
-                        ]
-                    },
-                    'amzn1.account.AEH3ZOZHYIZQA3VB75UPFMTQAMPQ': {
-                        'targets': {
-                            'primary': 'hbradburn7281.ddns.net:65432',
-                        },
-                        'devices': [
-                            {
-                                'friendly_name': 'TV',
-                                'manufacturer': 'Humax',
-                                'model': 'DTR-T2100',
-                                'connected_to':
-                                {
-                                    'next_device': 'Monitor',
-                                    'input': 'Input2'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Firestick', 
-                                'manufacturer': 'Amazon',
-                                'model': 'Firestick',
-                                'connected_to': 
-                                {
-                                    'next_device': 'Monitor',
-                                    'input': 'Input3'
-                                }
-                            },
-                            {
-                                'friendly_name': 'Monitor', 
-                                'manufacturer': 'Panasonic',
-                                'model': 'TX-L32X10AB',
-                            }
-                        ]
-                    }
-                }
+					'testuser': {
+						'targets': {
+							'localhost': '127.0.0.1:60000'
+						},
+						'devices': [
+							{
+								'friendly_name': 'AVsource', 
+								'manufacturer': 'Test',
+								'model': 'TestAVSource',
+								'target': 'localhost',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputAV'
+								}
+							},
+							{
+								'friendly_name': 'Asource', 
+								'manufacturer': 'Test',
+								'model': 'TestASource',
+								'target': 'localhost',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputA'
+								}
+							},
+							{
+								'friendly_name': 'Receiver', 
+								'manufacturer': 'Test',
+								'model': 'TestReceiver',
+								'target': 'localhost',
+								'connected_to': 
+								{
+									'next_device': 'Monitor',
+									'input': 'InputHDMI1'
+								}
+							},
+							{
+								'friendly_name': 'Monitor', 
+								'manufacturer': 'Test',
+								'model': 'TestMonitor',
+								'target': 'localhost'
+							}
+						]
+					},
+					'amzn1.account.AGY6FJTLLYJH6EYDMHWXLQSUJQZQ': {
+						'targets': {
+							'targeta': 'cloudon7281.ddns.net:65432',
+							'targetb': 'cloudon7281.ddns.net:65433',
+							'targetc': 'cloudon7281.ddns.net:65434'
+						},
+						'devices': [
+							{
+								'friendly_name': 'Blu-ray', 
+								'manufacturer': 'Oppo',
+								'model': 'BDP-83',
+								'target': 'targeta',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputBR'
+								}
+							},
+							{
+								'friendly_name': 'Compact Disc', 
+								'manufacturer': 'Oppo',
+								'model': 'BDP-83-CD',
+								'target': 'targeta',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputCD'
+								}
+							},
+							{
+								'friendly_name': 'TV', 
+								'manufacturer': 'Virgin',
+								'model': 'Hub-3',
+								'target': 'targetb',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputSAT'
+								}
+							},
+							{
+								'friendly_name': 'Firestick', 
+								'manufacturer': 'Amazon',
+								'model': 'Firestick',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputVCR'
+								}
+							},
+							{
+								'friendly_name': 'Dot', 
+								'manufacturer': 'Amazon',
+								'model': 'Echo Dot',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputPVR'
+								}
+							},
+							{
+								'friendly_name': 'Wii', 
+								'manufacturer': 'Nintendo',
+								'model': 'Wii U',
+								'connected_to': 
+								{
+									'next_device': 'Receiver',
+									'input': 'InputAV'
+								}
+							},
+							{
+								'friendly_name': 'Receiver', 
+								'manufacturer': 'Arcam',
+								'model': 'AVR360',
+								'target': 'targetc',
+								'connected_to': 
+								{
+									'next_device': 'Monitor',
+									'input': 'InputHDMI1'
+								}
+							},
+							{
+								'friendly_name': 'Monitor', 
+								'manufacturer': 'Pioneer',
+								'model': 'PDP-LX508D',
+								'target': 'targetb'
+							}
+						]
+					},
+					'amzn1.account.AEH3ZOZHYIZQA3VB75UPFMTQAMPQ': {
+						'targets': {
+							'primary': 'hbradburn7281.ddns.net:65432',
+						},
+						'devices': [
+							{
+								'friendly_name': 'TV',
+								'manufacturer': 'Humax',
+								'model': 'DTR-T2100',
+								'connected_to':
+								{
+									'next_device': 'Monitor',
+									'input': 'Input2'
+								}
+							},
+							{
+								'friendly_name': 'Firestick', 
+								'manufacturer': 'Amazon',
+								'model': 'Firestick',
+								'connected_to': 
+								{
+									'next_device': 'Monitor',
+									'input': 'Input3'
+								}
+							},
+							{
+								'friendly_name': 'Monitor', 
+								'manufacturer': 'Panasonic',
+								'model': 'TX-L32X10AB',
+							}
+						]
+					}
+				}

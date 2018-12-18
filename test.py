@@ -64,8 +64,12 @@ def run_tests():
 	sink = testKIRA(60000)
 	sink.spawn()
 
-	for test in testCases:
-		run_test(test, sink)
+	try:
+		for test in testCases:
+			run_test(test, sink)
+
+	except KeyboardInterrupt:
+		print("Interrupted")
 
 	sink.terminate()
 
