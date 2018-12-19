@@ -28,6 +28,7 @@ class testKIRA:
 	def spawn(self):
 		p = multiprocessing.Process(target=listener, args = (self.q, self.port))
 		self.jobs.append(p)
+		p.daemon = True
 		p.start()
 
 		# Wait till started
