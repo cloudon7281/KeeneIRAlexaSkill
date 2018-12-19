@@ -26,9 +26,8 @@ from userDetails import USER_DETAILS
 from alexaSchema import DISCOVERY_RESPONSE
 
 from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
-from AWSutilities import extract_token_from_request, unpack_request
-from LWAauth import get_user_from_token
-from mapping import model_user
+from AWSutilities import extract_user, unpack_request, is_discovery
+from mapping import model_user, skip_command
 from runCommand import run_command
 from response import construct_response
 
@@ -54,27 +53,8 @@ def lambda_handler(request, context):
     logger.info(json.dumps(request, indent=4))
     logger.info("Current device state: %s", pp.pformat(DEVICE_STATE))
 
-    if 'TEST_USER' in os.environ:
-        # Currently we are testing with a hard-coded user name
-        user = os.environ['TEST_USER']
-        logger.debug("User name passed as env var = %s", user)
-    else:
-        # User name must be retrieved from a token, either passed in as an env
-        # var or extracted from the real request.
-        if 'TEST_TOKEN' in os.environ:
-            OAuth2_token = os.environ['TEST_TOKEN']
-            logger.debug("Token passed as env var = %s", OAuth2_token)
-        else:
-            # Real request.  Extract token.
-            OAuth2_token = extract_token_from_request(request)
-        
-        user = get_user_from_token(OAuth2_token)
-
+    user = extract_user(request)
     logger.info("Request is for user %s", user)
-    if request["directive"]["header"]["name"] == "Discover":
-        req_is_discovery = True
-    else:
-        req_is_discovery = False
 
     # We now need the details of the user's devices (for a discovery request)
     # or their auto-generated activities (for a directive).  
@@ -97,6 +77,7 @@ def lambda_handler(request, context):
         # Map the user devices to endpoint and discovery information using
         # static files.
         discovery_response, command_sequences, endpoint_involvement = model_user(USER_DETAILS[user])
+        set_initial_state()
     else:
         # If this is a discovery, we need to read the user's devices object 
         # plus the global device DB from S3, and then write the mapped activity
@@ -104,7 +85,7 @@ def lambda_handler(request, context):
         # If this is a directive, we read the activity responses.
         logger.debug("Reading from S3 - not yet implemented")
 
-    if req_is_discovery:
+    if is_discovery(request):
         response = reply_to_discovery(discovery_response)
     else:
         response = handle_non_discovery(request, command_sequences, endpoint_involvement)
@@ -163,13 +144,12 @@ def handle_non_discovery(request, command_sequences, endpoint_involvement):
             logger.debug("Verb to run: %s", verb)
 
             # Before issuing this command, check in case we should skip it.
-            # We do so if:
-            # - the device has toggle rather than on/off      and
-            # - this is a TurnOn and the current state is on  or
-            if not skip_command(verb, command_tuple[verb], endpoint_involvement[device], DEVICE_STATE[device]):
+            if not skip_command(directive, verb, command_tuple[verb], endpoint_involvement, DEVICE_STATE):
                 run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
             else:
-                logger.debug("Already in correct state: skipping")   
+                logger.debug("Already in correct state: skipping")  
+
+            # need to turn off stuff on but not involved plus set new state 
 
         time.sleep(PAUSE_BETWEEN_COMMANDS)        
                    

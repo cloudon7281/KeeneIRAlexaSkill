@@ -24,19 +24,22 @@ logger = logging.getLogger()
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 
-def skip_command(verb, command_tuple, device_map, device_state):
+def skip_command(directive, verb, command_tuple, device_map, device_state):
 	# Determine whether to skip sending a command.
-    # We do so if:
-    # - the device has toggle rather than on/off      and
-    # - this is a TurnOn and the current state is on  or
-    skip = False
+	# We do so if:
+	# - the device has toggle rather than on/off      and
+	# - this is a TurnOn and the current state is on  or
+	skip = False
 
-    if verb == 'SingleIRCommand':
-	    device = command_tuple['single']['device']
-	    if device_map['toggle']:
-	        logger.debug("This is a single command for a device supporting power toggle")
-	        if (directive == 'Turn' and DEVICE_STATE[device] == True) or (directive == 'TurnOff' and DEVICE_STATE[device] == False):
-	            logger.debug("Already in correct state: skipping")   
+	if verb == 'SingleIRCommand' and (directive == 'TurnOn' or directive == 'TurnOff'):
+		device = command_tuple['single']['device']
+		if device_map[device]['toggle']:
+			logger.debug("This is a single command for a device supporting power toggle")
+			if (directive == 'TurnOn' and device_state[device] == True) or (directive == 'TurnOff' and device_state[device] == False):
+				logger.debug("Already in correct state: skipping")   
+				skip = True
+
+	return skip
 
 
 def construct_command_sequence(user_devices, root_device, global_database, capability, generic_commands, targets):
@@ -178,7 +181,8 @@ def construct_command_sequence(user_devices, root_device, global_database, capab
 							'single': {
 								'KIRA': device_details['IRcodes'][next_input], 
 								'target': find_target(device, targets),
-								'repeats': get_repeats(device_details)
+								'repeats': get_repeats(device_details),
+								'device': device['friendly_name']
 							}
 						}
 					}
@@ -278,6 +282,7 @@ def get_power_toggle(user_devices, global_database):
 
 	return device_power_map
 
+
 def model_user(user_details):
 	# We construct both the definition of the endpoints (= activities)
 	# auto-generated from the list of user devices and how they are connected
@@ -363,8 +368,12 @@ def model_user(user_details):
 				directives_to_commands = CAPABILITY_DIRECTIVES_TO_COMMANDS[capability]
 
 				for directive in directives_to_commands:
-					generic_commands = directives_to_commands[directive]
-					specific_commands = construct_command_sequence(user_devices, this_device, global_database, capability, generic_commands, user_targets)
+					specific_commands = construct_command_sequence(user_devices,
+																   this_device,
+																   global_database,
+																   capability,
+																   directives_to_commands[directive],
+																   user_targets)
 					command_sequences[endpoint_id][capability][directive] = specific_commands
 
 			# Add the constructed endpoint info to what we return

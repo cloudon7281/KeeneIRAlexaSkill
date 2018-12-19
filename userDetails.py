@@ -87,7 +87,7 @@ USER_DETAILS =  {
                                 }
                             },
                             {
-                                'friendly_name': 'Compact Disc', 
+                                'friendly_name': 'Oppo', 
                                 'manufacturer': 'Oppo',
                                 'model': 'BDP-83-CD',
                                 'target': 'targeta',

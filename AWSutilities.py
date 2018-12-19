@@ -12,11 +12,23 @@
 
 # This file contains a number of utilities related to the Alexa interface.
 
+import os
 import logging
 import time
 import uuid
 
+from LWAauth import get_user_from_token
+
 logger = logging.getLogger()
+
+def is_discovery(request):
+    if request["directive"]["header"]["name"] == "Discover":
+        req_is_discovery = True
+    else:
+        req_is_discovery = False
+
+    return req_is_discovery
+
 
 def extract_token_from_request(request):
     # Find the OAuth2 token from either a discovery or directive request.
@@ -42,4 +54,25 @@ def unpack_request(request):
     endpoint_id = request["directive"]["endpoint"]["endpointId"]
 
     return interface, directive, payload, endpoint_id
+
+def extract_user(request):
+    user = "<unknown>"
+    if 'TEST_USER' in os.environ:
+        # Currently we are testing with a hard-coded user name
+        user = os.environ['TEST_USER']
+        logger.debug("User name passed as env var = %s", user)
+    else:
+        # User name must be retrieved from a token, either passed in as an env
+        # var or extracted from the real request.
+        if 'TEST_TOKEN' in os.environ:
+            OAuth2_token = os.environ['TEST_TOKEN']
+            logger.debug("Token passed as env var = %s", OAuth2_token)
+        else:
+            # Real request.  Extract token.
+            OAuth2_token = extract_token_from_request(request)
+        
+        user = get_user_from_token(OAuth2_token)
+
+    return user
+
 

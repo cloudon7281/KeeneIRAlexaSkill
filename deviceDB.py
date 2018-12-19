@@ -42,7 +42,8 @@ DEVICE_DB = {
                         'supports': { 'PowerController', 
                                       'PlaybackController' },
                         'IRcodes': {
-                            'PowerToggle': 'TestASource: power toggle',
+                            'PowerOn': 'TestASource: power on',
+                            'PowerOff': 'TestASource: power off',
                             'Pause': 'TestASource: pause',
                             'Play': 'TestASource: play',
                             'Stop': 'TestASource: stop',
@@ -54,21 +55,22 @@ DEVICE_DB = {
                         'roles': { 'AV_switch', 'speaker' },
                         'supports': { 'PowerController', 
                                       'StepSpeaker' },
-                        'IRcodes': {
-                            'PowerToggle': 'TestReceiver: power toggle',
+                        'IRcodes': {  
+                            'PowerOn': 'TestReceiver: power on',
+                            'PowerOff': 'TestReceiver: power off',
+                            'InputA': 'TestReceiver: input A',
+                            'InputAV': 'TestReceiver: input AV',
+                            'InputHDMI1': 'TestReceiver: input HDMI1',
                             'VolumeUp': 'TestReceiver: volume up',
                             'VolumeDown': 'TestReceiver: volume down',
                             'Mute': 'TestReceiver: mute',
-                            'InputAV': 'TestReceiver: input for AV source',
-                            'InputA': 'TestReceiver: input for A only source',
                         },
                     },
                     'TestMonitor': {
                         'roles': { 'display' },
                         'supports': { 'PowerController' },
                         'IRcodes': {  
-                            'PowerOn': 'TestMonitor: power on',
-                            'PowerOff': 'TestMonitor: power off',
+                            'PowerToggle': 'TestMonitor: power toggle',
                             'InputHDMI1': 'TestMonitor: input HDMI1',
                         },
                     }

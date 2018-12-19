@@ -11,6 +11,7 @@
 # language governing permissions and limitations under the License.
 
 # This file defines test directives.
+import copy
 
 Discover = {
   "directive": {
@@ -29,7 +30,7 @@ Discover = {
   }
 }
 
-TurnOnSource = {
+TurnOnAVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.PowerController",
@@ -50,7 +51,8 @@ TurnOnSource = {
   }
 }
 
-TurnOffSource = {
+
+TurnOffAVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.PowerController",
@@ -71,7 +73,7 @@ TurnOffSource = {
   }
 }
 
-PauseSource = {
+PauseAVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.PlaybackController",
@@ -92,7 +94,7 @@ PauseSource = {
   }
 }
 
-VolDown5Source = {
+VolDown5AVSource = {
   "directive": {
     "header": {
       "namespace": "Alexa.StepSpeaker",
@@ -113,3 +115,47 @@ VolDown5Source = {
   }
 }
 
+TurnOnASource = copy.deepcopy(TurnOnAVSource)
+TurnOnASource["directive"]["endpoint"]["endpointId"] = "Asource"
+
+TurnOffASource = copy.deepcopy(TurnOffAVSource)
+TurnOffASource["directive"]["endpoint"]["endpointId"] = "Asource"
+
+PauseASource = copy.deepcopy(PauseAVSource)
+PauseASource["directive"]["endpoint"]["endpointId"] = "Asource"
+
+VolDown5ASource = copy.deepcopy(VolDown5AVSource)
+VolDown5ASource["directive"]["endpoint"]["endpointId"] = "Asource"
+
+testCases = [
+  { 
+    "title": "Discover",
+    "expect_kira_commands": False,
+    "directive": Discover,
+    "expected_commands": None, 
+  },
+  { 
+    "title": "Turn on AV source - all devices start off",
+    "expect_kira_commands": True,
+    "directive": TurnOnAVSource,
+    "expected_kira_commands": [ "TestAVSource: power toggle", "TestReceiver: power on", "TestMonitor: power toggle", "TestReceiver: input AV", "TestMonitor: input HDMI1" ]
+  },
+  { 
+    "title": "Turn off AV source",
+    "expect_kira_commands": True,
+    "directive": TurnOffAVSource,
+    "expected_kira_commands": [ "TestAVSource: power toggle", "TestReceiver: power off", "TestMonitor: power toggle" ]
+  },
+  { 
+    "title": "Turn on A source - all devices start off",
+    "expect_kira_commands": True,
+    "directive": TurnOnASource,
+    "expected_kira_commands": [ "TestASource: power on", "TestReceiver: power on", "TestReceiver: input A" ]
+  },
+  { 
+    "title": "Turn on AV source",
+    "expect_kira_commands": True,
+    "directive": TurnOnAVSource,
+    "expected_kira_commands": [ "TestAVSource: power toggle", "TestReceiver: power on", "TestMonitor: power toggle", "TestReceiver: input AV", "TestMonitor: input HDMI1" ]
+  },
+]
