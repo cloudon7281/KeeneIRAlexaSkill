@@ -10,13 +10,13 @@
 # CONDITIONS OF ANY KIND, express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-import logging, pprint
+import pprint
 
+from logutilities import log_info, log_debug
 from AWSutilities import unpack_request
 from alexaSchema import DIRECTIVE_RESPONSE, CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES
 from utilities import get_uuid, get_utc_timestamp
 
-logger = logging.getLogger()
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 def construct_response(request):

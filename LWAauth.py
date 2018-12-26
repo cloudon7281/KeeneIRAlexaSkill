@@ -14,31 +14,30 @@
 # corresponding to an access token.
 
 import os
-import logging
 import json
 import pprint
 import requests
 import urllib
 
-logger = logging.getLogger()
+from logutilities import log_info, log_debug
 
 LWA_PROFILE_URL = 'https://api.amazon.com/user/profile?'
 
 def get_user_from_token(token):
-    logger.debug("Token is %s", token)
+    log_debug("Token is %s", token)
 
     url = LWA_PROFILE_URL + urllib.parse.urlencode({ 'access_token' : token })
     r = requests.get(url=url)
 
     if r.status_code == 200:
-        logger.debug("Amazon profile returned is:")
-        logger.debug(json.dumps(r.json(), indent=4))
+        log_debug("Amazon profile returned is:")
+        log_debug(json.dumps(r.json(), indent=4))
 
         body = r.json()
         user = body['user_id']
     else:
-        logger.error("Amazon look up returned an error %d", r.status_code)
-        logger.error(json.dumps(r.json(), indent=4))
+        log_error("Amazon look up returned an error %d", r.status_code)
+        log_error(json.dumps(r.json(), indent=4))
 
         user = "<unknown>"
 

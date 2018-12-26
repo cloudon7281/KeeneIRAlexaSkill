@@ -17,18 +17,18 @@
 
 import socket
 import time
-import logging
-logger = logging.getLogger()
+
+from logutilities import log_info, log_debug
 
 def SendToKIRA(target, mesg, repeat, repeatDelay):
-    logger.debug("Send to %s with repeat %d, delay %.3f; message %s", target, repeat, repeatDelay, mesg)
+    log_debug("Send to %s with repeat %d, delay %.3f; message %s", target, repeat, repeatDelay, mesg)
 
     host, port = target.split(":")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(('', int(port)))
     for i in range(repeat+1):
-        logger.debug("Sending %s", mesg.encode('utf-8'))
+        log_debug("Sending %s", mesg.encode('utf-8'))
         sock.sendto(mesg.encode('utf-8'), (host, int(port)))
         if i < repeat:
             time.sleep(repeatDelay)

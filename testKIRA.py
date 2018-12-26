@@ -10,11 +10,12 @@
 # CONDITIONS OF ANY KIND, express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
 
-import logging, pprint
 import multiprocessing
 import socket
+import pprint
 
-logger = logging.getLogger()
+from logutilities import log_info, log_debug
+
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 class testKIRA:
@@ -57,7 +58,7 @@ def listener(q, port):
 
 	q.put("Started")
 	
-	logger.debug("Listen on port %d", port)
+	log_debug("Listen on port %d", port)
 
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

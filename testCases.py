@@ -153,9 +153,15 @@ testCases = [
     "expected_kira_commands": [ "TestASource: power on", "TestReceiver: power on", "TestReceiver: input A" ]
   },
   { 
+    "title": "Turn on A source - all devices start on",
+    "expect_kira_commands": True,
+    "directive": TurnOnASource,
+    "expected_kira_commands": [ "TestReceiver: input A" ]
+  },
+  { 
     "title": "Turn on AV source",
     "expect_kira_commands": True,
     "directive": TurnOnAVSource,
-    "expected_kira_commands": [ "TestAVSource: power toggle", "TestReceiver: power on", "TestMonitor: power toggle", "TestReceiver: input AV", "TestMonitor: input HDMI1" ]
+    "expected_kira_commands": [ "TestAVSource: power toggle", "TestASource: power off", "TestMonitor: power toggle", "TestReceiver: input AV", "TestMonitor: input HDMI1" ]
   },
 ]

@@ -15,7 +15,6 @@
 # Keene KIRA IR commands for a range of devices.
 
 import os
-import logging
 import time
 import json
 import pprint
@@ -24,16 +23,16 @@ import copy
 
 from userDetails import USER_DETAILS
 from alexaSchema import DISCOVERY_RESPONSE
-
 from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
 from AWSutilities import extract_user, unpack_request, is_discovery
-from mapping import model_user, skip_command
-from runCommand import run_command
+from mapping import model_user
+from runCommand import run_command, set_power_states
 from response import construct_response
+from logutilities import log_info, log_debug
 
 # Logger boilerplate
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+#logger = logging.getLogger()
+#log_setLevel(logging.INFO)
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 PAUSE_BETWEEN_COMMANDS = 0.2
@@ -49,12 +48,12 @@ def set_initial_state():
 def lambda_handler(request, context):
     # Main lambda handler.  We simply switch on the directive type.
 
-    logger.info("Received request")
-    logger.info(json.dumps(request, indent=4))
-    logger.info("Current device state: %s", pp.pformat(DEVICE_STATE))
+    log_info("Received request")
+    log_info(json.dumps(request, indent=4))
+    log_info("Current device state: %s", pp.pformat(DEVICE_STATE))
 
     user = extract_user(request)
-    logger.info("Request is for user %s", user)
+    log_info("Request is for user %s", user)
 
     # We now need the details of the user's devices (for a discovery request)
     # or their auto-generated activities (for a directive).  
@@ -69,29 +68,29 @@ def lambda_handler(request, context):
     #   directives
     # - for directives, we read the mapped activiites from S3.
     if 'USE_STATIC_FILES' in os.environ:
-        logger.debug("Using static files - map the user -> endpoints/activities")
+        log_debug("Using static files - map the user -> endpoints/activities")
 
         # Check this user is in the static input file.
         verify_static_user(user)
 
         # Map the user devices to endpoint and discovery information using
         # static files.
-        discovery_response, command_sequences, endpoint_involvement = model_user(USER_DETAILS[user])
-        set_initial_state()
+        discovery_response, command_sequences, device_power_map = model_user(USER_DETAILS[user])
     else:
         # If this is a discovery, we need to read the user's devices object 
         # plus the global device DB from S3, and then write the mapped activity
         # responses back to S3.
         # If this is a directive, we read the activity responses.
-        logger.debug("Reading from S3 - not yet implemented")
+        log_debug("Reading from S3 - not yet implemented")
 
     if is_discovery(request):
+        set_initial_state()
         response = reply_to_discovery(discovery_response)
     else:
-        response = handle_non_discovery(request, command_sequences, endpoint_involvement)
+        response = handle_non_discovery(request, command_sequences, device_power_map)
 
-    logger.info("Response:")
-    logger.info(json.dumps(response, indent=4, sort_keys=True))
+    log_info("Response:")
+    log_info(json.dumps(response, indent=4, sort_keys=True))
 
     return response
 
@@ -99,7 +98,7 @@ def reply_to_discovery(discovery_response):
     # Handle discovery requests.  This is straightforward: we have already 
     # mapped the users set of devices to an auto-generated list of activities
     # (endpoints), so just return them.
-    logger.info("Reply to discovery")
+    log_info("Reply to discovery")
 
     response = DISCOVERY_RESPONSE
     response['event']['payload']['endpoints'] = discovery_response
@@ -107,7 +106,7 @@ def reply_to_discovery(discovery_response):
                     
     return response
 
-def handle_non_discovery(request, command_sequences, endpoint_involvement):
+def handle_non_discovery(request, command_sequences, device_power_map):
     # We have received a directive for some capability interface, which we have
     # to now act on.
     # The command_sequences structure is a dict telling us what to do.  It
@@ -121,7 +120,7 @@ def handle_non_discovery(request, command_sequences, endpoint_involvement):
     #     }
     # }
     #
-    # The endpoint_involvement dict tells us which devices are needed for
+    # The device_power_map dict tells us which devices are needed for
     # which endpoints, plus for each device whether or not it has separate
     # on/off commands or (evil) a single power toggle.  We use the combo of
     # current state, device involvement and toggle vs. on/off to decide
@@ -132,26 +131,24 @@ def handle_non_discovery(request, command_sequences, endpoint_involvement):
     capability, directive, payload, endpoint_id = unpack_request(request)
     verify_request(command_sequences, endpoint_id, capability, directive)
 
-    logger.info("Received directive %s on capability %s for endpoint %s", directive, capability, endpoint_id)
+    log_info("Received directive %s on capability %s for endpoint %s", directive, capability, endpoint_id)
+
+    # If this is a PowerController capability we need to figure out
+    # what to turn on/off
+    if capability == "PowerController":
+        log_debug("Set power states")
+        set_power_states(directive, endpoint_id, DEVICE_STATE, device_power_map, PAUSE_BETWEEN_COMMANDS, payload)
 
     # Get the list of commands we need to respond to this directive
     commands_list = command_sequences[endpoint_id][capability][directive]
-
-    logger.info("Commands to execute:\n%s", pp.pformat(commands_list))
+    log_debug("Commands to execute:\n%s", pp.pformat(commands_list))
 
     for command_tuple in commands_list:
         for verb in command_tuple:
-            logger.debug("Verb to run: %s", verb)
+            log_debug("Verb to run: %s", verb)
+            run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
 
-            # Before issuing this command, check in case we should skip it.
-            if not skip_command(directive, verb, command_tuple[verb], endpoint_involvement, DEVICE_STATE):
-                run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
-            else:
-                logger.debug("Already in correct state: skipping")  
-
-            # need to turn off stuff on but not involved plus set new state 
-
-        time.sleep(PAUSE_BETWEEN_COMMANDS)        
+    time.sleep(PAUSE_BETWEEN_COMMANDS)        
                    
     response = construct_response(request)
 

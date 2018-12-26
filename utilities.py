@@ -12,12 +12,11 @@
 
 # This file contains a number of utilities.
 
-import logging
 import time
 import uuid
-from userDetails import USER_DETAILS
 
-logger = logging.getLogger()
+from logutilities import log_info, log_debug, log_error
+from userDetails import USER_DETAILS
 
 def get_utc_timestamp(seconds=None):
     return time.strftime("%Y-%m-%dT%H:%M:%S.00Z", time.gmtime(seconds))
@@ -28,55 +27,55 @@ def get_uuid():
 def verify_static_user(user):
     # Check we know about this user
     if user in USER_DETAILS:
-        logger.debug("Recognise user %s", user)
+        log_debug("Recognise user %s", user)
     else:
-        logger.error("Don't recognise user %s", user)
+        log_error("Don't recognise user %s", user)
 
 def verify_request(primitives, endpoint, capability, directive):
     # Check we know about this endpoint
     if endpoint in primitives:
-        logger.debug("Recognise endpoint %s", endpoint)
+        log_debug("Recognise endpoint %s", endpoint)
 
         if capability in primitives[endpoint]:
-            logger.debug("Recognise capability %s", capability)
+            log_debug("Recognise capability %s", capability)
 
             if directive in primitives[endpoint][capability]:
-                logger.debug("Recognise directive %s", directive)
+                log_debug("Recognise directive %s", directive)
             else:
-                logger.error("Don't recognise directive %s", directive)
+                log_error("Don't recognise directive %s", directive)
         else:
-            logger.error("Don't recognise capability %s", capability)
+            log_error("Don't recognise capability %s", capability)
     else:
-        logger.error("Don't recognise endpoint %s", endpoint)
+        log_error("Don't recognise endpoint %s", endpoint)
 
 def verify_devices(devices, database):
     # Check we recognise the list of devices the user has.  As we'er running
     # as a lambda, don't worry too much about raising and catching exceptions;
     # the important thing is to log it.
-    logger.debug("Validate user devices exist in DB")
+    log_debug("Validate user devices exist in DB")
     bad_device = False
     for device in devices:
-        logger.debug("User has device %s", device['friendly_name']) 
+        log_debug("Check user device %s", device['friendly_name']) 
         manu = device['manufacturer']
         model = device['model']
         if manu in database:
             if model in database[manu]:
-                logger.debug("Manu %s, model %s found OK", manu, model)
+                log_debug("Manu %s, model %s found OK", manu, model)
             else:
-                logger.error("Device %s with manu %s has incorrect model %s", device['friendly_name'], manu, model)
+                log_error("Device %s with manu %s has incorrect model %s", device['friendly_name'], manu, model)
                 bad_device = True
         else:
-            logger.error("Device %s has incorrect manu %s", device['friendly_name'], manu)
+            log_error("Device %s has incorrect manu %s", device['friendly_name'], manu)
             bad_device = True
 
 def find_target(device, targets):
     # Check which target is associated with this device
     if 'target' in device:
         target = device['target']
-        logger.debug("This device is associated with target %s", target)
+        log_debug("This device is associated with target %s", target)
     else:
         target = 'primary'
-        logger.debug("No target specified - assume primary")
+        log_debug("No target specified - assume primary")
 
     return targets[target]
 
@@ -90,7 +89,7 @@ def get_repeats(device_details):
 
 def get_connected_device(user_devices, global_database, device):
     next_device_name = device['connected_to']['next_device']
-    logger.debug("Next connected device is %s", next_device_name)
+    log_debug("Next connected device is %s", next_device_name)
     device  = find_device_from_friendly_name(user_devices, next_device_name)
     device_details = find_user_device_in_DB(device, global_database)
     return next_device_name, device, device_details

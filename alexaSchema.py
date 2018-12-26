@@ -90,14 +90,30 @@ CAPABILITY_DIRECTIVE_PROPERTIES_RESPONSES = {
 
 CAPABILITY_DIRECTIVES_TO_COMMANDS = {
 	
+    # Power Controller is special - we split it into two.
+    # - PowerController is the real Alexa capability.  We don't want our
+    #   normal model-driven handling to send power on/off commands, though, as
+    #   we have explicit handling for that as we may need to turn off devices
+    #   not in the endpoint that are currently on.  However, we still need to
+    #   set the inputs on devices correctly when handling a real TurnOn so we
+    #   keep it just for that.
+    # - DevicePowerController is not a real Alexa capability; we instead fake
+    #   it so we can get the basic on/off commands we need during the explicit
+    #   power handling.
+    'DevicePowerController': {
+        'TurnOn' : {
+            'SingleIRCommand': [ 'PowerOn', 'PowerToggle' ],
+            'Pause': 4,
+        },
+        'TurnOff' : {
+            'SingleIRCommand': [ 'PowerOff', 'PowerToggle' ],
+        },
+    },
 	'PowerController': {
 		'TurnOn' : {
-			'SingleIRCommand': [ 'PowerOn', 'PowerToggle' ],
-			'Pause': 4,
 			'InputChoice': True
 		},
 		'TurnOff' : {
-			'SingleIRCommand': [ 'PowerOff', 'PowerToggle' ],
 		},
 	},
 	'PlaybackController': {

@@ -11,17 +11,51 @@
 # language governing permissions and limitations under the License.
 
 
-import logging
 import time
 import pprint
 
+from logutilities import log_info, log_debug
 from KIRAIO import SendToKIRA
 
-logger = logging.getLogger()
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 DELAY = 0.02
 
+
+def set_power_states(directive, endpoint, device_state, device_power_map, pause, payload):
+    # Set the power state correctly for all devices, taking into account
+    # current state.
+    log_debug("Set power state for all devices given directive %s for endpoint %s", directive, endpoint)
+    log_debug("Current device states: %s", pp.pformat(device_state))
+
+    for device in device_power_map:
+        # The only circumstances in which a device is desired to be on is if
+        # it's invovled in the endpoint and we're turning it on; in all other
+        # cases (invovled but turning off, or not involved) we want it off.
+        this_device_map = device_power_map[device]
+        desired_on = (endpoint in this_device_map['endpoints']) and (directive == "TurnOn")
+        currently_on = device_state[device]
+
+        log_debug("Device %s: desired on %s; currently on %s", device, pp.pformat(desired_on), pp.pformat(currently_on))
+
+        send_command = None
+
+        if desired_on and not currently_on:
+            log_debug("Currently off; should be on")
+            send_command = 'TurnOn'
+
+        if not desired_on and currently_on:
+            log_debug("Currently on; should be off")
+            send_command = 'TurnOff'
+
+        if send_command != None:
+            for command_tuple in this_device_map['commands'][send_command]:
+                for verb in command_tuple:
+                    log_debug("Verb to run: %s", verb)
+                    run_command(verb, command_tuple[verb], pause, payload)
+
+        device_state[device] = desired_on
+        log_debug("State of device %s now %s", device, desired_on)
 
 def run_command(verb, command_tuple, pause, payload):
 	# This function executes a specific command, one of:
@@ -48,7 +82,7 @@ def run_command(verb, command_tuple, pause, payload):
         # XXX need to generalise payload location from AdjustVolume
         key = command_tuple['key']
         steps = payload[key]
-        logger.debug("Adjustment to make: %d", steps)
+        log_debug("Adjustment to make: %d", steps)
 
         if steps > 0:
             index = '+ve'
@@ -78,12 +112,12 @@ def run_command(verb, command_tuple, pause, payload):
                         else:
                             name = payload[key1][key2]
                             number = str(command_tuple['NameMap'][name])
-                            logger.debug("Channel name is %s; number is %s", name, number)
+                            log_debug("Channel name is %s; number is %s", name, number)
 
         if number == -1:
-            logger.error("Can't extract channel number from directive!")
+            log_error("Can't extract channel number from directive!")
         else:
-            logger.debug("Number to send: %s", number)
+            log_debug("Number to send: %s", number)
 
             for digit in number:
                 KIRA_string = command_tuple[digit]['KIRA']

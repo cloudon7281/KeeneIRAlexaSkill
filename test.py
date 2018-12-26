@@ -13,7 +13,6 @@
 # This file allows for explicit testing of stuff.
 
 import os
-import logging
 import time
 import pprint
 import json
@@ -24,13 +23,13 @@ from AWSlambda import lambda_handler
 from testCases import testCases
 
 # Logger boilerplate
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('kira.log')
-fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-logger.addHandler(fh)
+#logger = logging.getLogger()
+#log_setLevel(logging.DEBUG)
+#fh = logging.FileHandler('kira.log')
+#fh.setLevel(logging.DEBUG)
+#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+#fh.setFormatter(formatter)
+#log_addHandler(fh)
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
