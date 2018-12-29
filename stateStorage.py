@@ -33,7 +33,7 @@ import pickle
 import pprint
 
 from AWSS3storage import write_object, read_object
-from logutilities import log_info, log_debug
+from logutilities import log_info, log_debug, log_error
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 

@@ -18,16 +18,18 @@
 # xxx for now, everything is public access.
 
 import boto3, botocore
+import pprint
+from logutilities import log_info, log_debug, log_error
 
-from logutilities import log_info, log_debug
-
+REGION="eu-west-1"
+pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 def write_object(bucket_name, key_name, blob, version):
-	s3 = boto3.resource('s3')
+	s3 = boto3.client('s3')
 
 	# Check if bucket exists
 	try:
-		s3.meta.client.head_bucket(Bucket = bucket_name)
+		s3.head_bucket(Bucket = bucket_name)
 		log_debug("Bucket %s exists", bucket_name)
 	except botocore.exceptions.ClientError as e:
 		error_code = int(e.response['Error']['Code'])
@@ -35,7 +37,7 @@ def write_object(bucket_name, key_name, blob, version):
 			log_error("Denied access to bucket %s", bucket_name)
 		elif error_code == 404:
 			log_debug("Bucket %s does not exist - creating", bucket_name)
-			bucket = s3.create_bucket(ACL = 'public-read-write', Bucket = bucket_name)
+			bucket = s3.create_bucket(ACL = 'public-read-write', Bucket = bucket_name, CreateBucketConfiguration = { 'LocationConstraint': REGION })
 		else:
 			log_error("Error %d checking bucket %s", error_code, bucket_name)
 
@@ -51,7 +53,7 @@ def write_object(bucket_name, key_name, blob, version):
 def read_object(bucket_name, key_name):
 	blob = b''
 	version = ""
-	s3 = boto3.resource('s3')
+	s3 = boto3.client('s3')
 
 	# Check if bucket exists
 	try:
@@ -59,11 +61,10 @@ def read_object(bucket_name, key_name):
 
 		blob = response['Body'].read()
 		version = response['Metadata']['schema_version']
-		log_debug("Returned %d bytes of schema version %s reading object %s from bucket %s", PyBytes_Size(blob), version, key_name, bucket_name)
+		log_debug("Returned %d bytes of schema version %s reading object %s from bucket %s", len(blob), version, key_name, bucket_name)
 
 	except botocore.exceptions.ClientError as e:
-		error_code = int(e.response['Error']['Code'])
-		log_error("Error %d reading object %s from bucket %s", error_code, key_name, bucket_name)
+		log_error("Error %s reading object %s from bucket %s", pp.pformat(e), key_name, bucket_name)
 		
 	return blob, version
 
