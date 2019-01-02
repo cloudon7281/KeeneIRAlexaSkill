@@ -57,6 +57,10 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
         device_state[device] = desired_on
         log_debug("State of device %s now %s", device, desired_on)
 
+    status_changed = (send_command != None)
+    
+    return device_state, status_changed
+
 def run_command(verb, command_tuple, pause, payload):
 	# This function executes a specific command, one of:
 	#

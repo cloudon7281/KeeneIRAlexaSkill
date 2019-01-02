@@ -17,7 +17,6 @@ import pprint
 
 from logutilities import log_info, log_debug
 from alexaSchema import CAPABILITY_DISCOVERY_RESPONSES, CAPABILITY_DIRECTIVES_TO_COMMANDS
-from deviceDB import DEVICE_DB
 from utilities import verify_devices, find_target, get_connected_device, get_repeats, find_user_device_in_DB, find_device_from_friendly_name
 from endpoint import new_endpoint
 
@@ -291,7 +290,7 @@ def get_power_map(user_details, global_database):
 	return device_power_map
 
 
-def model_user(user_details):
+def model_user(user_details, device_database):
 	# Here we model the user's devices and activities.
 	# 
 	# It is important to understand:
@@ -423,15 +422,11 @@ def model_user(user_details):
 	# by the normal command sequence processing.
 	log_info("Auto-generating model")
 
-	# xxx in future we may get the global database from S3, but for now use the
-	# static file
-	global_database = DEVICE_DB
-
 	# Extract the lists of targets and devices from the user details, and check
 	# they're not duff.
 	user_targets = user_details['targets']
 	user_devices = user_details['devices']
-	verify_devices(user_devices, global_database)
+	verify_devices(user_devices, device_database)
 	
 	discovery_response = []
 	command_sequences = {}
@@ -439,14 +434,14 @@ def model_user(user_details):
 	# We can't construct the full power map until we have the list of endpoints
 	# but we can extract whether each device is a toggle or on/off plus the 
 	# list of its IR commands.
-	device_power_map = get_power_map(user_details, global_database)
+	device_power_map = get_power_map(user_details, device_database)
 	
 	# Now construct the list of endpoints, and use to flesh out the discovery
 	# response, command sequence and power map.
 	for this_device in user_devices:
 		log_debug("User has device %s", this_device['friendly_name'])	
 
-		device_details = find_user_device_in_DB(this_device, global_database)
+		device_details = find_user_device_in_DB(this_device, device_database)
 
 		is_video_source = ('AV_source' in device_details['roles'])
 		is_audio_source = ('A_source' in device_details['roles'])
@@ -464,7 +459,7 @@ def model_user(user_details):
 
 			# We now need to find the chain of devices in this endpoint chain, 
 			# plus the union of their capabilities.
-			capabilities, chain = find_endpoint_chain_and_caps(user_details, this_device, global_database)
+			capabilities, chain = find_endpoint_chain_and_caps(user_details, this_device, device_database)
 
 			for link in chain:
 				device_power_map[link['friendly_name']]['endpoints'][endpoint_id] = True
@@ -501,6 +496,12 @@ def model_user(user_details):
 
 	log_debug("Device power map = %s", pp.pformat(device_power_map))
 
-	return discovery_response, command_sequences, device_power_map
+	model = {
+				'discovery_response': discovery_response,
+				'command_sequences': command_sequences,
+				'device_power_map': device_power_map
+			}
+
+	return model
 
 

@@ -19,9 +19,8 @@ import time
 import json
 import pprint
 import requests
-import copy
 
-from userDetails import USER_DETAILS
+from userState import User
 from alexaSchema import DISCOVERY_RESPONSE
 from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
 from AWSutilities import extract_user, unpack_request, is_discovery
@@ -37,57 +36,36 @@ pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 PAUSE_BETWEEN_COMMANDS = 0.2
 
-DEVICE_STATE = {}
-
-def set_initial_state():
-    # Quick hack to set state of all devices to 'off' at start of run
-    for d in USER_DETAILS['testuser']['devices']:
-        DEVICE_STATE[d['friendly_name']] = False
-
-
 def lambda_handler(request, context):
     # Main lambda handler.  We simply switch on the directive type.
 
     log_info("Received request")
     log_info(json.dumps(request, indent=4))
-    log_info("Current device state: %s", pp.pformat(DEVICE_STATE))
 
-    user = extract_user(request)
-    log_info("Request is for user %s", user)
+    user_id = extract_user(request)
+    log_info("Request is for user %s", user_id)
 
-    # We now need the details of the user's devices (for a discovery request)
-    # or their auto-generated activities (for a directive).  
-    #
-    # If we're using static files, we do this mapping on every request.
-    #
-    # If we're using S3, then
-    # - the user's details (list of devices) is in S3
-    # - on discovery, we retrieve this, auto-generate the endpoint list and
-    #   set of mappings from directives -> commands, return the endpoint list
-    #   to Alexa, and store the mapped activities back into S3 for use on
-    #   directives
-    # - for directives, we read the mapped activiites from S3.
-    if 'USE_STATIC_FILES' in os.environ:
-        log_debug("Using static files - map the user -> endpoints/activities")
-
-        # Check this user is in the static input file.
-        verify_static_user(user)
-
-        # Map the user devices to endpoint and discovery information using
-        # static files.
-        discovery_response, command_sequences, device_power_map = model_user(USER_DETAILS[user])
-    else:
-        # If this is a discovery, we need to read the user's devices object 
-        # plus the global device DB from S3, and then write the mapped activity
-        # responses back to S3.
-        # If this is a directive, we read the activity responses.
-        log_debug("Reading from S3 - not yet implemented")
+    u = User(user_id)
 
     if is_discovery(request):
-        set_initial_state()
-        response = reply_to_discovery(discovery_response)
+        # On discovery requests we always re-model the user.  This is the 
+        # natural point to model, as it is the only mechanism to report to 
+        # Alexa any changes in a user's devices.
+        # Note that creating the model also resets the device status to
+        # 'all off'.
+        log_debug("Discovery: model the user")
+        u.create_model()
+        model = u.get_model()
+        response = reply_to_discovery(model['discovery_response'])
     else:
-        response = handle_non_discovery(request, command_sequences, device_power_map)
+        log_debug("Normal directive: retrieve the model")
+        model = u.get_model()
+        log_debug("Model is %s", pp.pformat(model))
+        device_status = u.get_device_status() 
+        response, new_device_status, status_changed = handle_non_discovery(request, model['command_sequences'], model['device_power_map'], device_status)
+        if status_changed:
+            log_debug("Power status of devices has changed: rewrite")
+            u.set_device_status(new_device_status)
 
     log_info("Response:")
     log_info(json.dumps(response, indent=4, sort_keys=True))
@@ -106,7 +84,7 @@ def reply_to_discovery(discovery_response):
                     
     return response
 
-def handle_non_discovery(request, command_sequences, device_power_map):
+def handle_non_discovery(request, command_sequences, device_power_map, device_state):
     # We have received a directive for some capability interface, which we have
     # to now act on.
     # The command_sequences structure is a dict telling us what to do.  It
@@ -136,8 +114,11 @@ def handle_non_discovery(request, command_sequences, device_power_map):
     # If this is a PowerController capability we need to figure out
     # what to turn on/off
     if capability == "PowerController":
-        log_debug("Set power states")
-        set_power_states(directive, endpoint_id, DEVICE_STATE, device_power_map, PAUSE_BETWEEN_COMMANDS, payload)
+        log_debug("Turn things on/off")
+        new_device_status, status_changed = set_power_states(directive, endpoint_id, device_state, device_power_map, PAUSE_BETWEEN_COMMANDS, payload)
+    else:
+        new_device_status = {}
+        status_changed = False
 
     # Get the list of commands we need to respond to this directive
     commands_list = command_sequences[endpoint_id][capability][directive]
@@ -152,4 +133,4 @@ def handle_non_discovery(request, command_sequences, device_power_map):
                    
     response = construct_response(request)
 
-    return response
+    return response, new_device_status, status_changed

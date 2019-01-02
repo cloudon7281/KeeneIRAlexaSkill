@@ -107,11 +107,11 @@ def main(argv):
 		if get:
 			u = User(user_id)
 			if args_dict['details']:
-				print_user_details(u.read_details())
+				print_user_details(u.get_details())
 			elif args_dict['model']:
-				print(pp.pformat(u.read_model()))
+				print(pp.pformat(u.get_model()))
 			elif args_dict['status']:
-				print_device_status(u.read_device_status())
+				print_device_status(u.get_device_status())
 		else:
 			input_dict = json.loads(open(json_file).read())
 
@@ -123,11 +123,11 @@ def main(argv):
 			for this_user in this_dict:
 				print("Uploading details for user %s" % (this_user))
 				u = User(this_user)
-				u.write_details(this_dict[this_user])
+				u.set_details(this_dict[this_user])
 	else:
 		if get:
 			d = Device(manufacturer, device)
-			print_device(d.read())
+			print_device(d.get())
 		else:
 			input_dict = json.loads(open(json_file).read())
 
@@ -140,7 +140,7 @@ def main(argv):
 				for this_device in this_dict[this_manufacturer]:
 					print("Uploading details for device %s from manufacturer %s" % (this_device, this_manufacturer))
 					d = Device(this_manufacturer, this_device)
-					d.write(this_dict[this_manufacturer][this_device])
+					d.set(this_dict[this_manufacturer][this_device])
 
 
 if __name__ == "__main__":
