@@ -22,21 +22,12 @@ from testKIRA import testKIRA
 from AWSlambda import lambda_handler
 from testCases import testCases
 
-# Logger boilerplate
-#logger = logging.getLogger()
-#log_setLevel(logging.DEBUG)
-#fh = logging.FileHandler('kira.log')
-#fh.setLevel(logging.DEBUG)
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-#fh.setFormatter(formatter)
-#log_addHandler(fh)
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 def set_test_env():
 	os.environ['TEST_USER'] = 'testuser'
 	os.environ['TEST_TOKEN'] = 'token'
-	os.environ['USE_STATIC_FILES'] = 'Y'
 
 
 def run_test(test, sink):

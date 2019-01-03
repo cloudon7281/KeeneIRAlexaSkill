@@ -17,9 +17,9 @@ import inspect
 import os
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 fh = logging.FileHandler('kira.log')
-fh.setLevel(logging.DEBUG)
+fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s %(levelname)5s %(message)s', "%Y-%m-%d %H:%M:%S")
 fh.setFormatter(formatter)
 logger.addHandler(fh)

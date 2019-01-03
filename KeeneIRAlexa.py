@@ -19,7 +19,7 @@ import pprint
 import os
 
 from logutilities import log_info, log_debug
-from stateStorage import Device, User
+from userState import Device, User
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
@@ -56,7 +56,7 @@ def print_user_details(user_details):
 	
 def print_device_status(device_status):
 	for device in device_status:
-		print("%s is %s" % (device, "on" if status[device] else "off"))
+		print("%s is %s" % (device, "on" if device_status[device] else "off"))
 
 def print_device(device):
 	roles = device['roles']

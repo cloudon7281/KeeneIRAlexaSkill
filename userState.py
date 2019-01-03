@@ -122,7 +122,10 @@ class User:
 	# This class models the details uploaded by a user about their own setup.
 
 	def __init__(self, user_id):
-		self.use_S3 = ('USE_STATIC_FILES' not in os.environ)
+		try:
+			self.use_S3 = not (os.environ['USE_STATIC_FILES'] == "Y")
+		except KeyError:
+			self.use_S3 = True
 		self.user_id = user_id
 		self.user_details = {}
 		self.model = {}
@@ -146,6 +149,7 @@ class User:
 				self.user_details = USER_DETAILS[self.user_id]
 			except KeyError:
 				log_error("Could not find user %s in static files", self.user_id)
+		return self.user_details
 	
 	def create_model(self):
 		# Create a model for this user, plus initialise the device status to
