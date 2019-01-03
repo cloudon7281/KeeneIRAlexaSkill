@@ -36,7 +36,7 @@ Outputs
 
 The lambda responds to incoming directives by sending a sequence of KIRA commands over UDP to a configured target address for a given user.  The target address should typically be a dynamic DNS name, with the user's home router or firewall configured to forward UDP packets on the appropriate port (usually 65432) to the appropriate KIRA target device, which should be configured to have a static/permanently allocated IP address on the home network.
 
-A possible future is to implement support for BearerTokenWithPartition to allow for multiple rooms in the same house.
+Multiple targets per user are supported to allow for a user with multiple Keene IR modules.
 
 Reporting
 =========
