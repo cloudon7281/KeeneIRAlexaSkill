@@ -78,3 +78,10 @@ A CLI is provided to allow users to upload (and check) details of both their set
 Run keenealexair for more details.
 
 xxx to flesh out
+
+UTs
+===
+
+There is a UT suite run by executing dotest.
+
+xxx to flesh out
