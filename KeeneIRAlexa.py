@@ -20,20 +20,24 @@ import os
 
 from logutilities import log_info, log_debug
 from userState import Device, User
+from KIRAIO import SendToKIRA
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 def parse_command_line(argv):
-	parser = argparse.ArgumentParser(description='Manage user and device details for Keene IR Alexa skill')
-	parser.add_argument("command", choices = ['get', 'set'], help='One of get or set')
-	parser.add_argument('-f','--file', type=str, help='File to read/write object from')
+	parser = argparse.ArgumentParser(description='Manage user and device details for Keene IR Alexa skill, and send test commands to devices.')
+	parser.add_argument("command", choices = ['get', 'set', 'send'], help='One of get, set or send')
 	parser.add_argument('-u','--user', type=str, help='Amazon account name of user')
+	parser.add_argument('-m','--manufacturer', type=str, help='Manufacturer name')
+	parser.add_argument('-d','--device', type=str, help='Device name')
+	parser.add_argument('-f','--file', type=str, help='File to read/write object from')
+	parser.add_argument('-b','--bulk', type=str, choices = ['user', 'device'], help='Bulk load')
 	parser.add_argument('-l','--details', action='store_true', help='Set if wanting to get/set user details')
 	parser.add_argument('-o','--model', action='store_true', help='Set if wanting to get/set user model')
 	parser.add_argument('-s','--status', action='store_true', help='Set if wanting to get/set user device status')
-	parser.add_argument('-m','--manufacturer', type=str, help='Manufacturer name')
-	parser.add_argument('-d','--device', type=str, help='Device name')
-	parser.add_argument('-b','--bulk', type=str, choices = ['user', 'device'], help='Bulk load')
+	parser.add_argument('-t','--target', type=str, help='Target to send KIRA command to; must be of form <IP address>:<port>')
+	parser.add_argument('-i','--IRcommand', type=str, help='Name of IR command to send')
+	parser.add_argument('-r','--repeats', type=int, default=0, help='Number of repeats')
 
 	args = vars(parser.parse_args())
 	return args
@@ -78,11 +82,14 @@ def main(argv):
 	# Start by parsing the command-line options.
 	args_dict = parse_command_line(argv)
 	
-	get = (args_dict['command'] == "get")
+	get_cmd = (args_dict['command'] == "get")
+	set_cmd = (args_dict['command'] == "set")
+	send_cmd = (args_dict['command'] == "send")
+
 	user = False
 	bulk = False
 
-	if not get:
+	if set_cmd:
 		if not args_dict['file']:
 			print("Error: if setting an object must specify JSON file")
 			return
@@ -100,11 +107,11 @@ def main(argv):
 		if args_dict['bulk'] == "user":
 			user = True
 	else:
-		print("Error: must specify one of user or manufacturer")
+		print("Error: must specify one of user or device")
 		return
 
 	if user:
-		if get:
+		if get_cmd:
 			u = User(user_id)
 			if args_dict['details']:
 				print_user_details(u.get_details())
@@ -112,7 +119,7 @@ def main(argv):
 				print(pp.pformat(u.get_model()))
 			elif args_dict['status']:
 				print_device_status(u.get_device_status())
-		else:
+		elif set_cmd:
 			input_dict = json.loads(open(json_file).read())
 
 			if not bulk:
@@ -124,11 +131,13 @@ def main(argv):
 				print("Uploading details for user %s" % (this_user))
 				u = User(this_user)
 				u.set_details(this_dict[this_user])
-	else:
-		if get:
-			d = Device(manufacturer, device)
-			print_device(d.get())
 		else:
+			print("Error: cannot send to a user, only a device")
+	else:
+		if get_cmd:
+			d = Device(manufacturer, device, use_S3=True)
+			print_device(d.get())
+		elif set_cmd:
 			input_dict = json.loads(open(json_file).read())
 
 			if not bulk:
@@ -139,8 +148,24 @@ def main(argv):
 			for this_manufacturer in this_dict:
 				for this_device in this_dict[this_manufacturer]:
 					print("Uploading details for device %s from manufacturer %s" % (this_device, this_manufacturer))
-					d = Device(this_manufacturer, this_device)
+					d = Device(this_manufacturer, this_device, use_S3=True)
 					d.set(this_dict[this_manufacturer][this_device])
+		else:
+			if not (args_dict['target'] and args_dict['command']):
+				print("Error: must specify both a target and a command to send to that target")
+			else:
+				d = Device(manufacturer, device, use_S3=True)
+				details = d.get()
+				IRcommand = args_dict['IRcommand']
+				target = args_dict['target']
+				repeats = args_dict['repeats']
+				try:
+					KIRA = details['IRcodes'][IRcommand]
+					print("Sending %s to %s/%s at address %s" % (IRcommand, manufacturer, device, target))
+					print("IR code string is %s" % (KIRA))
+					SendToKIRA(target, KIRA, repeats, 0.02)
+				except KeyError:
+					print("Error: could not find command %s for device %s/%s" % (IRcommand, manufacturer, device))
 
 
 if __name__ == "__main__":
