@@ -28,6 +28,8 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
     log_debug("Set power state for all devices given directive %s for endpoint %s", directive, endpoint)
     log_debug("Current device states: %s", pp.pformat(device_state))
 
+    status_changed = False
+
     for device in device_power_map:
         # The only circumstances in which a device is desired to be on is if
         # it's invovled in the endpoint and we're turning it on; in all other
@@ -49,6 +51,7 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
             send_command = 'TurnOff'
 
         if send_command != None:
+            status_changed = True
             for command_tuple in this_device_map['commands'][send_command]:
                 for verb in command_tuple:
                     log_debug("Verb to run: %s", verb)
@@ -57,8 +60,6 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
         device_state[device] = desired_on
         log_debug("State of device %s now %s", device, desired_on)
 
-    status_changed = (send_command != None)
-    
     return device_state, status_changed
 
 def run_command(verb, command_tuple, pause, payload):

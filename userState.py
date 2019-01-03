@@ -72,13 +72,13 @@ KEY_USER_DEVICE_STATUS = "-device-status"
 G_MODEL = {}
 G_DEVICE_STATUS = {}
 
-def write_state(bucket, key, state):
+def write_S3state(bucket, key, state):
 	blob = pickle.dumps(state)
 	write_object(BUCKET_ROOT + bucket, KEY_ROOT + key, blob, S3_SCHEMA_VERSION)
-	log_debug("Wrote %s/%s state: %s", bucket, key, pp.pformat(state))
+	log_debug("Wrote %s/%s state to S3: %s", bucket, key, pp.pformat(state))
 
 
-def read_state(bucket, key):
+def read_S3state(bucket, key):
 	state = {}
 
 	blob, version = read_object(BUCKET_ROOT + bucket, KEY_ROOT + key)
@@ -87,7 +87,7 @@ def read_state(bucket, key):
 		log_error("Schema mismatch: read %s, code at %s", version, S3_SCHEMA_VERSION)
 	else:
 		state = pickle.loads(blob)
-		log_debug("Read %s/%s state: %s", bucket, key, pp.pformat(state))
+		log_debug("Read %s/%s state from S3: %s", bucket, key, pp.pformat(state))
 
 	return state
 
@@ -104,13 +104,13 @@ class Device:
 
 	def set(self, details):
 		if self.use_S3:
-			write_state(BUCKET_GLOBALDB, self.manufacturer + "-" + self.device, details)
+			write_S3state(BUCKET_GLOBALDB, self.manufacturer + "-" + self.device, details)
 		else: 
 			log_error("Called to write device details but using static files")
 
 	def get(self):
 		if self.use_S3:
-			self.device_details = read_state(BUCKET_GLOBALDB, self.manufacturer + "-" + self.device)
+			self.device_details = read_S3state(BUCKET_GLOBALDB, self.manufacturer + "-" + self.device)
 		else:
 			try:
 				self.device_details = DEVICE_DB[self.manufacturer][self.device]
@@ -132,15 +132,15 @@ class User:
 		log_debug("Using S3 for storage? %s", self.use_S3)
 
 	def set_details(self, details):
-		log_debug("Set user details for user %s to be %s", self.user_id, pp.pformat(details))
+		log_debug("Set user details for user %s", self.user_id)
 		self.user_details = details
 		if self.use_S3:
-			write_state(BUCKET_USERDB, self.user_id + KEY_USER_DETAILS, details)
+			write_S3state(BUCKET_USERDB, self.user_id + KEY_USER_DETAILS, details)
 
 	def get_details(self):
 		if self.use_S3:
 			if not self.user_details:
-				self.user_details = read_state(BUCKET_USERDB, self.user_id + KEY_USER_DETAILS)
+				self.user_details = read_S3state(BUCKET_USERDB, self.user_id + KEY_USER_DETAILS)
 		else:
 			try:
 				self.user_details = USER_DETAILS[self.user_id]
@@ -164,11 +164,10 @@ class User:
 			self.devicesDB[manufacturer][model] = d.get()
 			device_state[user_device['friendly_name']] = False
 
-		log_debug("Device DB for user's devices: %s", pp.pformat(self.devicesDB))
 		self.model = model_user(self.user_details, self.devicesDB)
 		if self.use_S3:
 			log_debug("Secure model to S3")
-			write_state(BUCKET_USERDB, self.user_id + KEY_USER_MODEL, self.model)
+			write_S3state(BUCKET_USERDB, self.user_id + KEY_USER_MODEL, self.model)
 		else:
 			global G_MODEL
 			G_MODEL = copy.deepcopy(self.model)
@@ -179,31 +178,31 @@ class User:
 		if not self.model:
 			if self.use_S3:
 				log_debug("Retrieve model from S3")
-				self.model = read_state(BUCKET_USERDB, self.user_id + KEY_USER_MODEL)
+				self.model = read_S3state(BUCKET_USERDB, self.user_id + KEY_USER_MODEL)
 			else:
 				global G_MODEL
-				log_debug("Retrieve model from memory: %s", pp.pformat(G_MODEL))
 				self.model = copy.deepcopy(G_MODEL)
+				log_debug("Retrieved model from memory: %s", pp.pformat(self.model))
 		return self.model
 
 	def set_device_status(self, device_status):
 		log_debug("Set device status for user %s to be %s", self.user_id, pp.pformat(device_status))
 		self.device_status = device_status
 		if self.use_S3:
-			log_debug("Secure model to S3")
-			write_state(BUCKET_USERDB, self.user_id + KEY_USER_DEVICE_STATUS, device_status)
+			log_debug("Secure device status to S3")
+			write_S3state(BUCKET_USERDB, self.user_id + KEY_USER_DEVICE_STATUS, device_status)
 		else:
-			log_debug("Secure model to memory")
 			global G_DEVICE_STATUS
 			G_DEVICE_STATUS = copy.deepcopy(device_status)
+			log_debug("Secured device status to memory: %s", pp.pformat(G_DEVICE_STATUS))
 
 	def get_device_status(self):
 		if not self.device_status:
 			if self.use_S3:
-				log_debug("Retrieve model from S3")
-				self.device_status = read_state(BUCKET_USERDB, self.user_id + KEY_USER_DEVICE_STATUS)
+				log_debug("Retrieve device status from S3")
+				self.device_status = read_S3state(BUCKET_USERDB, self.user_id + KEY_USER_DEVICE_STATUS)
 			else:
-				log_debug("Retrieve model from memory")
 				global G_DEVICE_STATUS
 				self.device_status = copy.deepcopy(G_DEVICE_STATUS)
+				log_debug("Retrieved device status from memory: %s", pp.pformat(self.device_status))
 		return self.device_status
