@@ -38,7 +38,7 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
         desired_on = (endpoint in this_device_map['endpoints']) and (directive == "TurnOn")
         currently_on = device_state[device]
 
-        log_debug("Device %s: desired on %s; currently on %s", device, pp.pformat(desired_on), pp.pformat(currently_on))
+        log_info("Device %s: desired on %s; currently on %s", device, pp.pformat(desired_on), pp.pformat(currently_on))
 
         send_command = None
 
@@ -54,7 +54,7 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
             status_changed = True
             for command_tuple in this_device_map['commands'][send_command]:
                 for verb in command_tuple:
-                    log_debug("Verb to run: %s", verb)
+                    log_info("Run verb %s on device %s", verb, device)
                     run_command(verb, command_tuple[verb], pause, payload)
 
         device_state[device] = desired_on

@@ -21,7 +21,7 @@ import time
 from logutilities import log_info, log_debug
 
 def SendToKIRA(target, mesg, repeat, repeatDelay):
-    log_debug("Send to %s with repeat %d, delay %.3f; message %s", target, repeat, repeatDelay, mesg)
+    log_info("Send to %s with repeat %d, delay %.3f; message %s", target, repeat, repeatDelay, mesg)
 
     host, port = target.split(":")
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

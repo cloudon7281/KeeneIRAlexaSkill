@@ -77,7 +77,12 @@ def find_target(device, targets):
         target = 'primary'
         log_debug("No target specified - assume primary")
 
-    return targets[target]
+    if target in targets:
+        t = targets[target]
+    else:
+        t = None
+
+    return t
 
 def get_repeats(device_details):
     if 'IRrepeats' in device_details:
