@@ -26,7 +26,7 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
     # Set the power state correctly for all devices, taking into account
     # current state.
     log_debug("Set power state for all devices given directive %s for endpoint %s", directive, endpoint)
-    log_debug("Current device states: %s", pp.pformat(device_state))
+    log_info("Current device states: %s", pp.pformat(device_state))
 
     status_changed = False
 
@@ -59,6 +59,8 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
 
         device_state[device] = desired_on
         log_debug("State of device %s now %s", device, desired_on)
+
+    log_info("Did status change? %s", status_changed)
 
     return device_state, status_changed
 

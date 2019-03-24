@@ -190,7 +190,7 @@ class User:
 		return self.model
 
 	def set_device_status(self, device_status):
-		log_debug("Set device status for user %s to be %s", self.user_id, pp.pformat(device_status))
+		log_info("Set device status for user %s to be %s", self.user_id, pp.pformat(device_status))
 		self.device_status = device_status
 		if self.use_S3:
 			log_debug("Secure device status to S3")

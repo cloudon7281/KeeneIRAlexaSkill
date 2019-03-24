@@ -64,7 +64,7 @@ def lambda_handler(request, context):
         device_status = u.get_device_status() 
         response, new_device_status, status_changed = handle_non_discovery(request, model['command_sequences'], model['device_power_map'], device_status)
         if status_changed:
-            log_debug("Power status of devices has changed: rewrite")
+            log_info("Device status changed - updating")
             u.set_device_status(new_device_status)
 
     log_info("Response:")
@@ -132,5 +132,7 @@ def handle_non_discovery(request, command_sequences, device_power_map, device_st
     time.sleep(PAUSE_BETWEEN_COMMANDS)        
                    
     response = construct_response(request)
+
+    log_info("Did status change? %s", status_changed)
 
     return response, new_device_status, status_changed
