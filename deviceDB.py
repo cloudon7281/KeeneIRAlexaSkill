@@ -320,7 +320,7 @@ DEVICE_DB = {
                             'sky sports arena': 518,              # working
                             'eurosport 1': 521,                   # working
                             'eurosport 2': 522,                   # working
-                            'b. t. sport': 527,                   # not working - channel down
+                            'bt sport 1': 527,                    # not working - channel down
                             'bt sport 2': 528,
                             'bt sport 3': 529,
                             'bt sport espn': 534,                 # not working
