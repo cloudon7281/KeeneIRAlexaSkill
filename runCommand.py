@@ -81,6 +81,10 @@ def run_command(verb, command_tuple, pause, payload):
         KIRA_string = command_tuple['single']['KIRA']
         repeats = command_tuple['single']['repeats']
         target = command_tuple['single']['target']
+        
+        if 'log' in command_tuple['single']:
+            log_info(command_tuple['single']['log'])
+        
         SendToKIRA(target, KIRA_string, repeats, DELAY)
 
     elif verb == 'StepIRCommands':
@@ -100,6 +104,9 @@ def run_command(verb, command_tuple, pause, payload):
         target = command_tuple[index]['target']
         repeats = command_tuple[index]['repeats']
         
+        if 'log' in command_tuple[index]:
+            log_info("%s x %d", command_tuple[index]['log'], abs(steps))
+
         for n in range(0, abs(steps)):
             SendToKIRA(target, KIRA_string, repeats, DELAY)
             time.sleep(pause)
@@ -130,6 +137,10 @@ def run_command(verb, command_tuple, pause, payload):
                 KIRA_string = command_tuple[digit]['KIRA']
                 target = command_tuple[digit]['target']
                 repeats = command_tuple[digit]['repeats']
+
+                if 'log' in command_tuple[digit]:
+                    log_info(command_tuple[digit]['log'])
+
                 SendToKIRA(target, KIRA_string, repeats, DELAY)
                 time.sleep(pause)
 

@@ -16,7 +16,7 @@ import time
 import uuid
 
 from logutilities import log_info, log_debug, log_error
-from userDetails import USER_DETAILS
+#from userDetails import USER_DETAILS
 
 def get_utc_timestamp(seconds=None):
     return time.strftime("%Y-%m-%dT%H:%M:%S.00Z", time.gmtime(seconds))
@@ -26,9 +26,9 @@ def get_uuid():
 
 def verify_static_user(user):
     # Check we know about this user
-    if user in USER_DETAILS:
-        log_debug("Recognise user %s", user)
-    else:
+    #if user in USER_DETAILS:
+    #    log_debug("Recognise user %s", user)
+    #else:
         log_error("Don't recognise user %s", user)
 
 def verify_request(primitives, endpoint, capability, directive):

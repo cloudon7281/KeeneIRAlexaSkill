@@ -69,6 +69,7 @@ def construct_command_sequence(device_chain, capability, generic_commands):
 
 		for link in device_chain:
 			device = link['friendly_name']
+			device_logname = link['log_name']
 			device_details = link['details']
 			target = link['target']
 			
@@ -132,7 +133,8 @@ def construct_command_sequence(device_chain, capability, generic_commands):
 										'KIRA': device_details['IRcodes'][command], 
 										'target': target,
 										'repeats': get_repeats(device_details),
-										'device': device
+										'device': device,
+										'log': "Send " + command + " to " + device_logname + " (" + device + ")"
 										}
 									found = True
 					commands.append(output_cmd)		
@@ -153,7 +155,8 @@ def construct_command_sequence(device_chain, capability, generic_commands):
 								'KIRA': device_details['IRcodes'][link['required_input']], 
 								'target': target,
 								'repeats': get_repeats(device_details),
-								'device': device
+								'device': device,
+								'log': "Set " + device_logname + " (" + device + ")" + " to " + link['required_input']
 							}
 						}
 					}
@@ -200,6 +203,7 @@ def find_endpoint_chain_and_caps(user_details, root_device, global_database):
 
 		this_link = {
 						"friendly_name": device['friendly_name'],
+						"log_name": device['manufacturer'] + " " + device['model'],
 						"details": device_details,
 						"target": find_target(device, user_targets)
 					}
@@ -270,11 +274,12 @@ def get_power_map(user_details, global_database):
 			log_debug("Does not use PowerToggle")
 			this_device_map['toggle'] = False
 
-		# Store the set of commands corresponding to the power diorectives.
+		# Store the set of commands corresponding to the power directives.
 		this_device_map['commands'] = {}
 		chain = [
 					{
 						"friendly_name": this_device['friendly_name'],
+						"log_name": this_device['manufacturer'] + " " + this_device['model'],
 						"details": device_details,
 						"target": find_target(this_device, user_targets)
 					}

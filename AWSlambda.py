@@ -122,11 +122,9 @@ def handle_non_discovery(request, command_sequences, device_power_map, device_st
 
     # Get the list of commands we need to respond to this directive
     commands_list = command_sequences[endpoint_id][capability][directive]
-    log_info("Commands to execute:\n%s", pp.pformat(commands_list))
 
     for command_tuple in commands_list:
         for verb in command_tuple:
-            log_info("Verb to run: %s", verb)
             run_command(verb, command_tuple[verb], PAUSE_BETWEEN_COMMANDS, payload)
 
     time.sleep(PAUSE_BETWEEN_COMMANDS)        

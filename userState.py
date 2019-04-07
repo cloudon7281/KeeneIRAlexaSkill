@@ -49,7 +49,6 @@ import copy
 from AWSS3storage import write_object, read_object
 from logutilities import log_info, log_debug, log_error
 from deviceDB import DEVICE_DB
-from userDetails import USER_DETAILS
 from utilities import verify_devices
 from mapping import model_user
 

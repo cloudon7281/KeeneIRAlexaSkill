@@ -19,7 +19,7 @@ import pprint
 import requests
 import urllib
 
-from logutilities import log_info, log_debug
+from logutilities import log_info, log_debug, log_error
 
 LWA_PROFILE_URL = 'https://api.amazon.com/user/profile?'
 
