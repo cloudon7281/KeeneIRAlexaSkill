@@ -103,7 +103,6 @@ CAPABILITY_DIRECTIVES_TO_COMMANDS = {
     'DevicePowerController': {
         'TurnOn' : {
             'SingleIRCommand': [ 'PowerOn', 'PowerToggle' ],
-            'Pause': 4,
         },
         'TurnOff' : {
             'SingleIRCommand': [ 'PowerOff', 'PowerToggle' ],
