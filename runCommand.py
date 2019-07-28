@@ -32,33 +32,41 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
 
     for device in device_power_map:
         # The only circumstances in which a device is desired to be on is if
-        # it's invovled in the endpoint and we're turning it on; in all other
+        # it's involved in the endpoint and we're turning it on; in all other
         # cases (invovled but turning off, or not involved) we want it off.
+        # However - we only do this for devices in the same room as the chain.
         this_device_map = device_power_map[device]
-        desired_on = (endpoint in this_device_map['endpoints']) and (directive == "TurnOn")
-        currently_on = device_state[device]
+        if endpoint in this_device_map['endpoints']:
+            this_room = this_device_map['room']
+            log_debug("Room involved: %s", this_room)
 
-        log_info("Device %s: desired on %s; currently on %s", device, pp.pformat(desired_on), pp.pformat(currently_on))
+    for device in device_power_map:
+        this_device_map = device_power_map[device]
+        if this_device_map['room'] == this_room:
+            desired_on = (endpoint in this_device_map['endpoints']) and (directive == "TurnOn")
+            currently_on = device_state[device]
 
-        send_command = None
+            log_info("Device %s: in correct room, desired on %s; currently on %s", device, pp.pformat(desired_on), pp.pformat(currently_on))
 
-        if desired_on and not currently_on:
-            log_debug("Currently off; should be on")
-            send_command = 'TurnOn'
+            send_command = None
 
-        if not desired_on and currently_on:
-            log_debug("Currently on; should be off")
-            send_command = 'TurnOff'
+            if desired_on and not currently_on:
+                log_debug("Currently off; should be on")
+                send_command = 'TurnOn'
 
-        if send_command != None:
-            status_changed = True
-            for command_tuple in this_device_map['commands'][send_command]:
-                for verb in command_tuple:
-                    log_info("Run verb %s on device %s", verb, device)
-                    run_command(verb, command_tuple[verb], pause, payload)
+            if not desired_on and currently_on:
+                log_debug("Currently on; should be off")
+                send_command = 'TurnOff'
 
-        device_state[device] = desired_on
-        log_debug("State of device %s now %s", device, desired_on)
+            if send_command != None:
+                status_changed = True
+                for command_tuple in this_device_map['commands'][send_command]:
+                    for verb in command_tuple:
+                        log_info("Run verb %s on device %s", verb, device)
+                        run_command(verb, command_tuple[verb], pause, payload)
+
+            device_state[device] = desired_on
+            log_debug("State of device %s now %s", device, desired_on)
 
     log_info("Did status change? %s", status_changed)
 

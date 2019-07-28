@@ -24,7 +24,6 @@ from userState import User
 from alexaSchema import DISCOVERY_RESPONSE
 from utilities import verify_static_user, verify_request, get_uuid, get_utc_timestamp
 from AWSutilities import extract_user, unpack_request, is_discovery
-from mapping import model_user
 from runCommand import run_command, set_power_states
 from response import construct_response
 from logutilities import log_info, log_debug
@@ -56,7 +55,7 @@ def lambda_handler(request, context):
         log_debug("Discovery: model the user")
         u.create_model()
         model = u.get_model()
-        response = reply_to_discovery(model['discovery_response'])
+        response = handle_discovery(model['discovery_response'])
     else:
         log_debug("Normal directive: retrieve the model")
         model = u.get_model()
@@ -72,7 +71,7 @@ def lambda_handler(request, context):
 
     return response
 
-def reply_to_discovery(discovery_response):
+def handle_discovery(discovery_response):
     # Handle discovery requests.  This is straightforward: we have already 
     # mapped the users set of devices to an auto-generated list of activities
     # (endpoints), so just return them.
@@ -131,6 +130,6 @@ def handle_non_discovery(request, command_sequences, device_power_map, device_st
                    
     response = construct_response(request)
 
-    log_info("Did status change? %s", status_changed)
+    log_info("Did device power on/off status change? %s", status_changed)
 
     return response, new_device_status, status_changed

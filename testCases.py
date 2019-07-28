@@ -51,7 +51,6 @@ TurnOnAVSource = {
   }
 }
 
-
 TurnOffAVSource = {
   "directive": {
     "header": {
@@ -115,6 +114,7 @@ VolDown5AVSource = {
   }
 }
 
+
 TurnOnASource = copy.deepcopy(TurnOnAVSource)
 TurnOnASource["directive"]["endpoint"]["endpointId"] = "Asource"
 
@@ -126,6 +126,12 @@ PauseASource["directive"]["endpoint"]["endpointId"] = "Asource"
 
 VolDown5ASource = copy.deepcopy(VolDown5AVSource)
 VolDown5ASource["directive"]["endpoint"]["endpointId"] = "Asource"
+
+TurnOnAVSource_room2 = copy.deepcopy(TurnOnAVSource)
+TurnOnAVSource_room2["directive"]["endpoint"]["endpointId"] = "AVsource_room2"
+
+TurnOffAVSource_room2 = copy.deepcopy(TurnOffAVSource)
+TurnOffAVSource_room2["directive"]["endpoint"]["endpointId"] = "AVsource_room2"
 
 testCases = [
   { 
@@ -164,4 +170,17 @@ testCases = [
     "directive": TurnOnAVSource,
     "expected_kira_commands": [ "TestAVSource: power toggle", "TestASource: power off", "TestMonitor: power toggle", "TestReceiver: input AV", "TestMonitor: input HDMI1" ]
   },
+    { 
+    "title": "Turn on AV source in room 2 - all devices start off (note recevier and monitor are same type as in room 1)",
+    "expect_kira_commands": True,
+    "directive": TurnOnAVSource_room2,
+    "expected_kira_commands": [ "TestAVSource_room2: power toggle", "TestReceiver: power on", "TestMonitor: power toggle", "TestReceiver: input AV", "TestMonitor: input HDMI1" ]
+  },
+  { 
+    "title": "Turn off AV source in room 2",
+    "expect_kira_commands": True,
+    "directive": TurnOffAVSource_room2,
+    "expected_kira_commands": [ "TestAVSource_room2: power toggle", "TestReceiver: power off", "TestMonitor: power toggle" ]
+  },
+
 ]

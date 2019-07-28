@@ -50,7 +50,7 @@ from AWSS3storage import write_object, read_object
 from logutilities import log_info, log_debug, log_error
 from deviceDB import DEVICE_DB
 from utilities import verify_devices
-from mapping import model_user
+from model import model_user_and_devices
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
@@ -167,7 +167,7 @@ class User:
 			self.devicesDB[manufacturer][model] = d.get()
 			device_state[user_device['friendly_name']] = False
 
-		self.model = model_user(self.user_details, self.devicesDB)
+		self.model = model_user_and_devices(self.user_details, self.devicesDB)
 		if self.use_S3:
 			log_debug("Secure model to S3")
 			write_S3state(BUCKET_USERDB, self.user_id + KEY_USER_MODEL, self.model)

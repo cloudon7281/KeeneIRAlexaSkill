@@ -13,6 +13,19 @@
                 "FastForward": "TestAVSource: fast forward"
             }
         },
+        "TestAVSource_room2": {
+            "roles": [ "AV_source" ],
+            "supports": [ "PowerController", 
+                          "PlaybackController" ],
+            "IRcodes": {
+                "PowerToggle": "TestAVSource_room2: power toggle",
+                "Pause": "TestAVSource_room2: pause",
+                "Play": "TestAVSource_room2: play",
+                "Stop": "TestAVSource_room2: stop",
+                "Rewind": "TestAVSource_room2: rewind",
+                "FastForward": "TestAVSource_room2: fast forward"
+            }
+        },
         "TestASource": {
             "roles": [ "A_source" ],
             "supports": [ "PowerController", 

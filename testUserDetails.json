@@ -9,6 +9,7 @@
                 "manufacturer": "Test",
                 "model": "TestAVSource",
                 "target": "localhost",
+                "room": "room1",
                 "connected_to": 
                 {
                     "next_device": "Receiver",
@@ -20,6 +21,7 @@
                 "manufacturer": "Test",
                 "model": "TestASource",
                 "target": "localhost",
+                "room": "room1",
                 "connected_to": 
                 {
                     "next_device": "Receiver",
@@ -31,6 +33,7 @@
                 "manufacturer": "Test",
                 "model": "TestReceiver",
                 "target": "localhost",
+                "room": "room1",
                 "connected_to": 
                 {
                     "next_device": "Monitor",
@@ -41,7 +44,39 @@
                 "friendly_name": "Monitor", 
                 "manufacturer": "Test",
                 "model": "TestMonitor",
-                "target": "localhost"
+                "target": "localhost",
+                "room": "room1"
+            },
+            {
+                "friendly_name": "AVsource_room2", 
+                "manufacturer": "Test",
+                "model": "TestAVSource_room2",
+                "target": "localhost",
+                "room": "room2",
+                "connected_to": 
+                {
+                    "next_device": "Receiver_room2",
+                    "input": "InputAV"
+                }
+            },
+            {
+                "friendly_name": "Receiver_room2", 
+                "manufacturer": "Test",
+                "model": "TestReceiver",
+                "target": "localhost",
+                "room": "room2",
+                "connected_to": 
+                {
+                    "next_device": "Monitor_room2",
+                    "input": "InputHDMI1"
+                }
+            },
+            {
+                "friendly_name": "Monitor_room2", 
+                "manufacturer": "Test",
+                "model": "TestMonitor",
+                "target": "localhost",
+                "room": "room2"
             }
         ]
     }

@@ -28,6 +28,7 @@ pp = pprint.PrettyPrinter(indent=2, width = 200)
 def set_test_env():
 	os.environ['TEST_USER'] = 'testuser'
 	os.environ['TEST_TOKEN'] = 'token'
+	os.environ['LOG_LEVEL'] = 'DEBUG'
 
 
 def run_test(test, sink):
