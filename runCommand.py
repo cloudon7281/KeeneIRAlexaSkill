@@ -20,6 +20,7 @@ from KIRAIO import SendToKIRA
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 DELAY = 0.02
+DELAY_AFTER_POWER_ON = 4
 
 
 def set_power_states(directive, endpoint, device_state, device_power_map, pause, payload):
@@ -29,6 +30,7 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
     log_info("Current device states: %s", pp.pformat(device_state))
 
     status_changed = False
+    send_power_on = False
 
     for device in device_power_map:
         # The only circumstances in which a device is desired to be on is if
@@ -53,6 +55,7 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
             if desired_on and not currently_on:
                 log_debug("Currently off; should be on")
                 send_command = 'TurnOn'
+                send_power_on = True
 
             if not desired_on and currently_on:
                 log_debug("Currently on; should be off")
@@ -67,6 +70,12 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
 
             device_state[device] = desired_on
             log_debug("State of device %s now %s", device, desired_on)
+
+            # If we've turned anything on, wait for them to come up as e.g. we may be
+            # about to set their input channel
+            if send_power_on:
+                log_info("Turned at least one device on - pause")
+                time.sleep(DELAY_AFTER_POWER_ON)
 
     log_info("Did status change? %s", status_changed)
 
