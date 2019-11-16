@@ -71,12 +71,6 @@ def set_power_states(directive, endpoint, device_state, device_power_map, pause,
             device_state[device] = desired_on
             log_debug("State of device %s now %s", device, desired_on)
 
-            # If we've turned anything on, wait for them to come up as e.g. we may be
-            # about to set their input channel
-            if send_power_on:
-                log_info("Turned at least one device on - pause")
-                time.sleep(DELAY_AFTER_POWER_ON)
-
     # If we've turned anything on, wait for them to come up as e.g. we may be
     # about to set their input channel
     if send_power_on:
