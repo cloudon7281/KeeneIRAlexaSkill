@@ -4,6 +4,7 @@
             "roles": [ "AV_source" ],
             "supports": [ "PowerController", 
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {
                 "PowerToggle": "TestAVSource: power toggle",
                 "Pause": "TestAVSource: pause",
@@ -17,6 +18,7 @@
             "roles": [ "AV_source" ],
             "supports": [ "PowerController", 
                           "PlaybackController" ],
+            "protocol": "tcp",
             "IRcodes": {
                 "PowerToggle": "TestAVSource_room2: power toggle",
                 "Pause": "TestAVSource_room2: pause",
@@ -30,6 +32,7 @@
             "roles": [ "A_source" ],
             "supports": [ "PowerController", 
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {
                 "PowerOn": "TestASource: power on",
                 "PowerOff": "TestASource: power off",
@@ -44,6 +47,7 @@
             "roles": [ "AV_switch", "speaker" ],
             "supports": [ "PowerController", 
                           "StepSpeaker" ],
+            "protocol": "udp",
             "IRcodes": {  
                 "PowerOn": "TestReceiver: power on",
                 "PowerOff": "TestReceiver: power off",
@@ -58,6 +62,7 @@
         "TestMonitor": {
             "roles": [ "display" ],
             "supports": [ "PowerController" ],
+            "protocol": "udp",
             "IRcodes": {  
                 "PowerToggle": "TestMonitor: power toggle",
                 "InputHDMI1": "TestMonitor: input HDMI1"
@@ -68,6 +73,7 @@
         "Wii U": {
             "roles": [ "AV_source" ],
             "supports": [],
+            "protocol": "udp",
             "IRcodes": {             
             }
         }
@@ -77,6 +83,7 @@
             "roles": [ "AV_source" ],
             "supports": [ "PowerController", 
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {
                 "Eject": "K 2627 1123 11DD 019D 0244 019D 0244 019E 0243 019E 0243 019E 0243 019E 062A 019D 0244 019D 0246 019D 0244 019D 0243 019D 0244 019D 0244 0183 025E 0182 025E 0182 0244 019D 0244 019D 11F7 0184 062A 019E 062A 019E 062A 019E 0243 019E 062A 019D 0246 019C 0246 019D 0243 019E 0243 019E 0244 019D 0243 019E 0244 019D 0244 019D 062A 0183 062A 019E 062A 019E 062A 019E 062A 019E 062A 019E 062A 019E 2000",
                 "PowerToggle": "K 2627 1172 118D 01D1 0211 01D0 0210 01D1 0210 01D0 0211 01D0 0210 01CF 05F7 01D0 0212 01E9 01F7 01D0 0211 01E8 01F8 01D0 0210 01D1 0210 01B6 0210 01D0 0210 01E9 01F8 01D0 0210 01CF 11C5 01B6 05F7 01EC 05DC 01D1 05F6 01D0 0212 01CF 0211 01CF 0211 01D0 0211 01D0 0211 01E8 01F7 01E9 01F8 01E9 01F7 01D0 0211 01D0 05F6 01D1 05DC 01D1 05F7 01D0 05F7 01D0 05F7 01D1 05F7 01D1 05F7 01CF 05F8 01D0 2000",
@@ -90,6 +97,7 @@
         "TX-L32X10AB": {
             "roles": [ "display"],
             "supports": [ "PowerController", "StepSpeaker" ],
+            "protocol": "udp",
             "IRcodes": {
                 "PowerOn": "K 2632 0D9A 06BA 018B 01C6 01BC 051E 01A4 01C9 01A4 01C8 01A2 01AD 01BD 01AE 01BD 01AD 01BE 01AD 01A3 01C9 01A3 01C8 01A4 01AC 01BD 01AE 01BD 01AD 01BF 051C 01A2 01AE 01A4 01C8 01BC 01AE 01BC 01AE 01A4 01C8 01A4 01C8 01A2 01AE 01A4 01C7 01BE 01AD 01BD 051E 01A4 01AC 01A5 01C7 01BD 01AE 01BD 01AE 01A3 01C8 01A3 01C9 01A3 01AC 01BE 01AD 01BE 01AD 01BD 051E 01A3 051E 01BD 051E 01A3 051E 01A3 051E 01BD 01AD 01BD 01AE 01BD 01AE 01A3 051C 01BD 051E 01A4 051C 01BD 0520 01A3 051E 01BD 01AD 01BE 051C 01A4 2000",                        
                 "PowerOff": "K 2632 0D7E 06BA 01BF 01AD 01A4 051C 01BE 01AD 01BD 01AD 01BD 01AD 01A5 01C7 01A4 01C8 01A3 01AD 01BE 01AD 01BD 01AD 01BE 01AD 01A3 01C9 01A2 01C9 01A3 051C 01BE 01AE 01A4 01C7 01A4 01C8 01A3 01AD 01BE 01AC 01A6 01C6 01A6 01C7 018A 01E1 01A3 01C8 01A3 051E 01BD 01AE 01A3 01C8 01A4 01C8 01A4 01AC 01BD 01AD 01BE 01AD 01BE 01AD 01A4 01C8 018A 0535 01BE 051E 01A4 051B 01BD 0520 01A4 051C 01A5 0537 01A3 01AD 01BD 01AD 01BE 051E 018A 0536 01BD 051E 01A4 051C 01BD 051E 01A5 051B 01BE 01AD 01A4 051C 01BD 2000",                        
@@ -109,6 +117,7 @@
         "PDP-LX508D": {
             "roles": [ "display" ],
             "supports": [ "PowerController" ],
+            "protocol": "udp",
             "IRcodes": {  
                 "PowerToggle": "K 2622 211F 10B9 01FD 022D 01FC 064B 01FD 022D 01FC 064B 01FD 022D 01FC 064B 01FD 022D 01FD 064B 01FD 064B 01FD 022C 01FD 064B 01FD 022D 01FC 064B 01FD 022D 01FC 064B 01FD 022D 01FC 022D 01FC 022D 01FD 064B 01FD 064B 01FD 064B 01FD 022C 01FD 022D 01FC 022D 01FC 064B 01FD 064B 01FD 022D 01FC 022D 01FC 022D 01FC 064C 01FC 064B 01FD 064B 01FD 2000",
                 "InputHDMI1": "K 2622 211E 10BB 01FB 022E 01FB 064C 01FC 022E 01FB 064C 01FC 022E 01FB 064C 01FC 022E 01FB 064C 01FC 064C 01FC 022E 01FB 064C 01FC 022E 01FB 064C 01FC 022D 01FC 064C 01FC 022E 01FB 022D 01FC 064C 01FC 022E 01FB 064C 01FC 064C 01FC 022D 01FC 064C 01FC 022D 01FC 064C 01FC 022D 01FC 064C 01FC 022D 01FC 022E 01FB 064C 01FC 022E 01FB 064C 01FC 2000",
@@ -123,6 +132,7 @@
         "Firestick": {
             "roles": [ "AV_source" ],
             "supports": [],
+            "protocol": "udp",
             "IRcodes": {             
             }
         },  
@@ -139,6 +149,7 @@
             "roles": [ "AV_switch, speaker" ],
             "supports": [ "PowerController", 
                           "StepSpeaker" ],
+            "protocol": "udp",
             "IRcodes": {             
                 "PowerOn": "K 260B 06BD 0394 0358 070D 06EA 037B 0372 037A 0373 0394 0371 06F3 0359 0394 0356 0395 06EA 06F3 0371 037B 0357 2000",
                 "PowerOff": "K 260B 035E 037A 0374 0378 0357 0395 06D2 03AF 0371 037A 0371 037B 0358 070C 06EB 037A 0358 0394 0371 070F 06D0 2000",
@@ -157,12 +168,31 @@
         }
     },
 
+    "Marantz": {
+        "NR1602": {
+            "roles": [ "AV_switch, speaker" ],
+            "supports": [ "PowerController", 
+                          "StepSpeaker" ],
+            "protocol": "tcp",
+            "IRcodes": {             
+                "PowerOn": "PWON\r",
+                "PowerOff": "PWSTANDBY\r",
+                "InputCD": "SICD\r",
+                "InputSAT": "SISAT\r",
+                "VolumeUp": "MVUP\r",
+                "VolumeDown": "MVDOWN\r"
+            },
+            "IRrepeats": 0
+        }
+    },
+
     "Humax": { 
         "DTR-T2100": {
             "roles": [ "AV_source" ],
             "supports": [ "PowerController", 
                           "ChannelController",
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {             
                 "0": "K 2622 22CA 11DD 01D2 0293 01D2 0278 01EC 0279 01EC 0278 01D2 0278 01EC 0279 01EC 0278 01EC 0279 01D1 0278 01EC 0279 01EC 0278 01D2 0278 01EC 06C8 01ED 0278 01EC 0279 01EC 0278 01D2 0278 01EC 0278 01EC 06C8 01ED 06C8 01ED 0278 01EC 0279 01D1 0278 01EC 0279 01EC 06C7 01ED 06C8 01ED 0279 01D1 0278 01EC 06E3 01D2 06E3 01D2 06E0 01D3 06E0 01D2 2000",
                 "1": "K 2622 22CA 11DD 01D3 0292 01D2 0278 021A 024A 021B 024A 01D2 0278 021B 024A 021A 024A 021A 024B 01D2 0278 021A 024A 021A 024A 01D3 0277 021A 069A 021B 024B 0219 024B 021A 024A 01D2 06E0 01D3 06E0 01D3 0278 021A 024A 021A 024B 021A 024A 01D2 0278 021A 024B 0219 024B 01D2 0278 0219 069B 021A 069A 021B 069A 01EC 06E3 01D3 06E0 01D2 06E0 01D3 2000",
@@ -206,6 +236,7 @@
         "PVR-9300T": {
             "roles": [ "AV_source" ],
             "supports": [ "PowerController", "ChannelController", "PlaybackController"],
+            "protocol": "udp",
             "IRcodes": {
                 "0": "K 2622 2306 1187 0242 0223 0241 0224 020C 023E 0243 0222 0240 0225 0225 023F 0227 0224 0241 0224 0240 0674 0228 023C 0225 0225 0228 023C 0243 0671 0241 0672 0229 023C 0226 0224 0241 0224 0241 0224 0224 068F 0225 068D 0224 0227 0241 0224 0241 0223 020C 023F 0241 0672 0241 0672 0229 023C 0242 0223 0226 068C 020C 06A7 0226 068F 0225 0674 0242 2000",
                 "1": "K 2622 2324 1184 022A 0221 022D 0237 0246 021E 022B 021E 0247 021E 022D 0236 022C 021E 0246 021E 0245 066F 0247 021E 022B 021F 0247 021D 0247 066D 022E 0686 022D 0237 022A 021F 0247 066D 0248 066D 0247 021E 0246 021E 022A 021F 022E 0236 0246 021E 022A 0221 0247 021D 0246 021E 0213 06A0 0213 06A0 022C 0687 022B 0689 022C 0687 022C 0688 0212 2000",
@@ -235,6 +266,7 @@
             "supports": [ "PowerController", 
                           "ChannelController",
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {             
                 "0": "K 260B 0351 0386 037E 036E 06F7 06E6 06F8 0702 06DE 0387 037C 036F 037E 036E 0366 0387 037D 036E 037E 036E 037E 2000",
                 "1": "K 260B 036B 036D 06F8 036D 0368 06FE 06DF 071A 06E0 0384 0368 0383 037D 036F 0368 0384 0380 036B 0380 0700 0368 2000",
@@ -305,6 +337,7 @@
             "supports": [ "PowerController", 
                           "ChannelController",
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {
                 "Eject": "K 2622 22E7 11A5 0224 068F 0226 0240 0224 0240 0226 068D 0225 0240 0209 0241 0225 068D 0225 0240 0226 023F 020B 06A7 0225 068F 0225 0240 020A 06A8 020C 06A7 0225 0226 0224 068F 0224 0691 0224 068F 0224 0242 0223 068F 0225 068F 0225 0240 020B 0259 020A 0240 0226 023F 0224 0241 020A 06A8 020A 0241 0224 0240 0224 068F 0226 068C 0226 068D 0226 2000",
                 "PowerOn": "K 2622 22EE 11A0 0242 0672 0241 0224 020D 0256 020E 06A5 020E 023C 0240 0224 0244 0670 0229 023C 020E 023A 0241 0672 022A 0689 022A 023A 0229 068A 0229 068A 0236 022E 0228 068B 022A 0239 020E 06A5 020E 023C 0242 0671 0229 068A 0241 0225 0228 068A 0229 023C 0243 0670 0229 023C 0228 068A 020E 023E 0227 023C 0229 068A 0242 0223 0226 068D 020D 2000",
@@ -323,6 +356,7 @@
             "supports": [ "PowerController", 
                           "ChannelController",
                           "PlaybackController" ],
+            "protocol": "udp",
             "IRcodes": {
                 "Eject": "K 2622 22E7 11A5 0224 068F 0226 0240 0224 0240 0226 068D 0225 0240 0209 0241 0225 068D 0225 0240 0226 023F 020B 06A7 0225 068F 0225 0240 020A 06A8 020C 06A7 0225 0226 0224 068F 0224 0691 0224 068F 0224 0242 0223 068F 0225 068F 0225 0240 020B 0259 020A 0240 0226 023F 0224 0241 020A 06A8 020A 0241 0224 0240 0224 068F 0226 068C 0226 068D 0226 2000",
                 "PowerOn": "K 2622 22EE 11A0 0242 0672 0241 0224 020D 0256 020E 06A5 020E 023C 0240 0224 0244 0670 0229 023C 020E 023A 0241 0672 022A 0689 022A 023A 0229 068A 0229 068A 0236 022E 0228 068B 022A 0239 020E 06A5 020E 023C 0242 0671 0229 068A 0241 0225 0228 068A 0229 023C 0243 0670 0229 023C 0228 068A 020E 023E 0227 023C 0229 068A 0242 0223 0226 068D 020D 2000",

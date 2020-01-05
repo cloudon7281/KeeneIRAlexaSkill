@@ -18,7 +18,7 @@ import pprint
 import json
 import testCases
 
-from testKIRA import testKIRA
+from testip import testip
 from AWSlambda import lambda_handler
 from testCases import testCases
 
@@ -31,14 +31,18 @@ def set_test_env():
 	os.environ['LOG_LEVEL'] = 'DEBUG'
 
 
-def run_test(test, sink):
+def run_test(test, sinkudp, sinktcp):
 	print("\nRunning test case:", test["title"])
 	pass_test = True
 
 	response = lambda_handler(test["directive"], "")
 
 	if test["expect_kira_commands"]:
-		kira_commands = sink.get_messages()
+		kira_commands = []
+		if test["expect_udp"]:
+			kira_commands = kira_commands + sinkudp.get_messages()
+		if test["expect_tcp"]:
+			kira_commands = kira_commands + sinktcp.get_messages()
 		print("Received KIRA commands:", pp.pformat(kira_commands))
 		print("Expected KIRA commands:", pp.pformat(test["expected_kira_commands"]))
 
@@ -52,17 +56,20 @@ def run_test(test, sink):
 
 def run_tests():
 	set_test_env()
-	sink = testKIRA(60000)
-	sink.spawn()
+	sinkudp = testip(60000, "udp")
+	sinktcp = testip(60000, "tcp")
+	sinkudp.spawn()
+	sinktcp.spawn()
 
 	try:
 		for test in testCases:
-			run_test(test, sink)
+			run_test(test, sinkudp, sinktcp)
 
 	except KeyboardInterrupt:
 		print("Interrupted")
 
-	sink.terminate()
+	sinkudp.terminate()
+	sinktcp.terminate()
 
 
 if __name__ == '__main__':

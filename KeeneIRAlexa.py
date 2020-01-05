@@ -20,7 +20,7 @@ import os
 
 from logutilities import log_info, log_debug
 from userState import Device, User
-from KIRAIO import SendToKIRA
+from ip import SendTCP, SendUDP
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
@@ -65,6 +65,7 @@ def print_device_status(device_status):
 def print_device(device):
 	roles = device['roles']
 	supports = device['supports']
+	protocol = device['protocol']
 	IRcodes = device['IRcodes']
 
 	print("Roles:")
@@ -73,6 +74,7 @@ def print_device(device):
 	print("Supports Alexa interfaces:")
 	for i in supports:
 		print("-\t%s" % (i))
+	print("Protocol used:\n-\t%s" % protocol)
 	print("IR codes:")
 	for c in IRcodes:
 		print("-\t%-20s %s" % (c, IRcodes[c]))
@@ -159,11 +161,15 @@ def main(argv):
 				IRcommand = args_dict['IRcommand']
 				target = args_dict['target']
 				repeats = args_dict['repeats']
+				protocol = details['protocol']
 				try:
 					KIRA = details['IRcodes'][IRcommand]
 					print("Sending %s to %s/%s at address %s" % (IRcommand, manufacturer, device, target))
 					print("IR code string is %s" % (KIRA))
-					SendToKIRA(target, KIRA, repeats, 0.02)
+					if protocol == "udp":
+						SendUDP(target, KIRA, repeats, 0.02)
+					else:
+						SendTCP(target, KIRA, repeats, 0.02)
 				except KeyError:
 					print("Error: could not find command %s for device %s/%s" % (IRcommand, manufacturer, device))
 

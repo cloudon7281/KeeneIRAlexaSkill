@@ -35,6 +35,7 @@ def which_capability(capability):
 def construct_specific_IR_command(device_details, command, target, device_name, device_logname):
 	output_cmd = { 
 		'KIRA': device_details['IRcodes'][command], 
+		'protocol': device_details['protocol'],
 		'target': target,
 		'repeats': get_repeats(device_details),
 		'device': device_name,

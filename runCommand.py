@@ -15,12 +15,14 @@ import time
 import pprint
 
 from logutilities import log_info, log_debug
-from KIRAIO import SendToKIRA
+from ip import SendUDP, SendTCP
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
 DELAY = 0.02
 DELAY_AFTER_POWER_ON = 4
+
+protocol_map = { "udp" : "SendUDP", "tcp" : "SendTCP" }
 
 
 def set_power_states(directive, endpoint, device_state, device_power_map, pause, payload):
@@ -98,12 +100,13 @@ def run_command(verb, command_tuple, pause, payload):
         KIRA_string = command_tuple['single']['KIRA']
         repeats = command_tuple['single']['repeats']
         target = command_tuple['single']['target']
+        protocol = command_tuple['single']['protocol']
         
         if 'log' in command_tuple['single']:
             log_info(command_tuple['single']['log'])
-        
-        SendToKIRA(target, KIRA_string, repeats, DELAY)
 
+        globals()[protocol_map[protocol]](target, KIRA_string, repeats, DELAY)
+        
     elif verb == 'StepIRCommands':
         # In this case we need to extract the value N in the payload
         # then send either the +ve or -ve command N times.
@@ -120,12 +123,13 @@ def run_command(verb, command_tuple, pause, payload):
         KIRA_string = command_tuple[index]['KIRA']
         target = command_tuple[index]['target']
         repeats = command_tuple[index]['repeats']
+        protocol = command_tuple[index]['protocol']
         
         if 'log' in command_tuple[index]:
             log_info("%s x %d", command_tuple[index]['log'], abs(steps))
 
         for n in range(0, abs(steps)):
-            SendToKIRA(target, KIRA_string, repeats, DELAY)
+            globals()[protocol_map[protocol]](target, KIRA_string, repeats, DELAY)
             time.sleep(pause)
 
     elif verb == 'DigitsIRCommands':
@@ -154,11 +158,12 @@ def run_command(verb, command_tuple, pause, payload):
                 KIRA_string = command_tuple[digit]['KIRA']
                 target = command_tuple[digit]['target']
                 repeats = command_tuple[digit]['repeats']
+                protocol = command_tuple[digit]['protocol']
 
                 if 'log' in command_tuple[digit]:
                     log_info(command_tuple[digit]['log'])
 
-                SendToKIRA(target, KIRA_string, repeats, DELAY)
+                globals()[protocol_map[protocol]](target, KIRA_string, repeats, DELAY)
                 time.sleep(pause)
 
     elif verb == 'Pause':
