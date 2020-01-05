@@ -28,6 +28,7 @@ DEVICE_DB = {
                         'roles': { 'AV_source' },
                         'supports': { 'PowerController', 
                                       'PlaybackController' },
+                        'protocol': 'udp',
                         'IRcodes': {
                             'PowerToggle': 'TestAVSource: power toggle',
                             'Pause': 'TestAVSource: pause',
@@ -37,10 +38,25 @@ DEVICE_DB = {
                             'FastForward': 'TestAVSource: fast forward',
                         },
                     },
+                    'TestAVSource_room2': {
+                        'roles': { 'AV_source' },
+                        'supports': { 'PowerController', 
+                                      'PlaybackController' },
+                        'protocol': 'tcp',
+                        'IRcodes': {
+                            'PowerToggle': 'TestAVSource_room2: power toggle',
+                            'Pause': 'TestAVSource_room2: pause',
+                            'Play': 'TestAVSource_room2: play',
+                            'Stop': 'TestAVSource_room2: stop',
+                            'Rewind': 'TestAVSource_room2: rewind',
+                            'FastForward': 'TestAVSource_room2: fast forward',
+                        },
+                    },
                     'TestASource': {
                         'roles': { 'A_source' },
                         'supports': { 'PowerController', 
                                       'PlaybackController' },
+                        'protocol': 'udp',
                         'IRcodes': {
                             'PowerOn': 'TestASource: power on',
                             'PowerOff': 'TestASource: power off',
@@ -55,6 +71,7 @@ DEVICE_DB = {
                         'roles': { 'AV_switch', 'speaker' },
                         'supports': { 'PowerController', 
                                       'StepSpeaker' },
+                        'protocol': 'udp',
                         'IRcodes': {  
                             'PowerOn': 'TestReceiver: power on',
                             'PowerOff': 'TestReceiver: power off',
@@ -69,6 +86,7 @@ DEVICE_DB = {
                     'TestMonitor': {
                         'roles': { 'display' },
                         'supports': { 'PowerController' },
+                        'protocol': 'udp',
                         'IRcodes': {  
                             'PowerToggle': 'TestMonitor: power toggle',
                             'InputHDMI1': 'TestMonitor: input HDMI1',

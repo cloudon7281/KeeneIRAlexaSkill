@@ -51,6 +51,7 @@ from logutilities import log_info, log_debug, log_error
 from deviceDB import DEVICE_DB
 from utilities import verify_devices
 from model import model_user_and_devices
+from userDetails import USER_DETAILS
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
