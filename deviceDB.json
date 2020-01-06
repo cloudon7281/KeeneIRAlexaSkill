@@ -176,11 +176,13 @@
             "protocol": "tcp",
             "IRcodes": {             
                 "PowerOn": "PWON\r",
-                "PowerOff": "PWSTANDBY\r",
+                "PowerOff": "SICD\r",
                 "InputCD": "SICD\r",
                 "InputSAT": "SISAT\r",
+                "InputGAME": "SIGAME\r",
                 "VolumeUp": "MVUP\r",
-                "VolumeDown": "MVDOWN\r"
+                "VolumeDown": "MVDOWN\r",
+                "Mute": "MUON\r"
             },
             "IRrepeats": 0
         }
