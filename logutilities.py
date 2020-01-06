@@ -17,17 +17,20 @@ import inspect
 import os
 
 logger = logging.getLogger()
-fh = logging.FileHandler('kira.log')
+if 'LOG_LOCAL' in os.environ:
+	fh = logging.FileHandler('kira.log')
 
 log_level = logging.INFO
 if 'LOG_LEVEL' in os.environ:
 	if os.environ['LOG_LEVEL'] == "DEBUG":
 		log_level = logging.DEBUG
 logger.setLevel(log_level)
-fh.setLevel(log_level)
-formatter = logging.Formatter('%(asctime)s %(levelname)5s %(message)s', "%Y-%m-%d %H:%M:%S")
-fh.setFormatter(formatter)
-logger.addHandler(fh)
+
+if 'LOG_LOCAL' in os.environ:
+	fh.setLevel(log_level)
+	formatter = logging.Formatter('%(asctime)s %(levelname)5s %(message)s', "%Y-%m-%d %H:%M:%S")
+	fh.setFormatter(formatter)
+	logger.addHandler(fh)
 
 def log_info(msg, *arg):
     func = inspect.currentframe().f_back.f_code
