@@ -12,6 +12,7 @@ uploadusers.cmd
 keene-ir-dev.csv
 userDetails.json
 userDetails.py
+alexa_smart_home_message_schema.json
 
 # Skill icons
 *.png
