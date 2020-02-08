@@ -42,7 +42,7 @@ def parse_command_line(argv):
 	args = vars(parser.parse_args())
 	return args
 
-def print_user_details(user_details):
+def print_user_details(user_details, device_status):
 	user_devices = user_details['devices']
 	user_targets = user_details['targets']
 
@@ -51,10 +51,12 @@ def print_user_details(user_details):
 		print("-\t%s @ %s" % (t, user_targets[t]))
 	print("Devices:")
 	for d in user_devices:
-		print("-\t%s" % (d['friendly_name']))
+		print("-\t%s (%s)" % (d['friendly_name'], "on" if device_status[d['friendly_name']] else "off"))
 		print("-\t\t%s/%s" % (d['manufacturer'], d['model']))
 		if 'target' in d:
 			print("-\t\ttarget %s" % (d['target']))
+		if 'room' in d:
+			print("-\t\troom %s" % (d['room']))
 		if 'connected_to' in d:
 			print("-\t\tconnected to %s on %s" % (d['connected_to']['next_device'], d['connected_to']['input']))
 	
@@ -116,7 +118,7 @@ def main(argv):
 		if get_cmd:
 			u = User(user_id)
 			if args_dict['details']:
-				print_user_details(u.get_details())
+				print_user_details(u.get_details(), u.get_device_status())
 			elif args_dict['model']:
 				print(pp.pformat(u.get_model()))
 			elif args_dict['status']:
