@@ -1,0 +1,1 @@
+keeneiralexa set -f deviceDB.json -b device

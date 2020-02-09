@@ -17,11 +17,11 @@ from utilities import find_target, get_connected_device, find_user_device_in_DB
 
 pp = pprint.PrettyPrinter(indent=2, width = 200)
 
-def new_endpoint(endpoint_id, manufacturer):	
+def new_endpoint(endpoint_id, manufacturer, description):	
 	endpoint = {}		
 	endpoint['endpointId'] = endpoint_id
 	endpoint['friendlyName'] = endpoint_id
-	endpoint['description'] = "some blurb"
+	endpoint['description'] = description
 	endpoint['displayCategories'] = [ "TV" ]
 	endpoint['manufacturerName'] = manufacturer
 	endpoint['capabilities'] = []
@@ -39,7 +39,7 @@ def construct_endpoint_chain(user_details, root_device, global_database):
 
 	log_debug("Find the set of capabilities for the activity rooted in %s", root_device['friendly_name'])
 
-	endpoint = new_endpoint(root_device['friendly_name'].replace(" ",""), root_device['manufacturer'])
+	endpoint = new_endpoint(root_device['friendly_name'].replace(" ",""), root_device['manufacturer'], root_device['description'])
 
 	capabilities = {}
 	chain = []

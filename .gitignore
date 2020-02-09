@@ -5,10 +5,6 @@
 __pycache__/*
 *.zip
 *.log
-dotest.cmd
-testkeene.cmd
-uploaddevices.cmd
-uploadusers.cmd
 keene-ir-dev.csv
 userDetails.json
 userDetails.py
