@@ -27,6 +27,7 @@ from AWSutilities import extract_user, unpack_request, is_discovery
 from runCommand import run_command, set_power_states
 from response import construct_response
 from logutilities import log_info, log_debug
+#from validation import validate_message
 
 # Logger boilerplate
 #logger = logging.getLogger()
@@ -68,6 +69,8 @@ def lambda_handler(request, context):
 
     log_info("Response:")
     log_info(json.dumps(response, indent=4, sort_keys=True))
+
+    #validate_message(response)
 
     return response
 

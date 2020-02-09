@@ -21,10 +21,11 @@ def new_endpoint(endpoint_id, manufacturer):
 	endpoint = {}		
 	endpoint['endpointId'] = endpoint_id
 	endpoint['friendlyName'] = endpoint_id
-	endpoint['Description'] = "some blurb"
+	endpoint['description'] = "some blurb"
 	endpoint['displayCategories'] = [ "TV" ]
 	endpoint['manufacturerName'] = manufacturer
 	endpoint['capabilities'] = []
+	endpoint['cookie'] = {}
 
 	return endpoint
 
@@ -38,7 +39,7 @@ def construct_endpoint_chain(user_details, root_device, global_database):
 
 	log_debug("Find the set of capabilities for the activity rooted in %s", root_device['friendly_name'])
 
-	endpoint = new_endpoint(root_device['friendly_name'], root_device['manufacturer'])
+	endpoint = new_endpoint(root_device['friendly_name'].replace(" ",""), root_device['manufacturer'])
 
 	capabilities = {}
 	chain = []

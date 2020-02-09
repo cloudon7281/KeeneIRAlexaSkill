@@ -12,7 +12,7 @@ uploadusers.cmd
 keene-ir-dev.csv
 userDetails.json
 userDetails.py
-alexa_smart_home_message_schema.json
+#alexa_smart_home_message_schema.json
 
 # Skill icons
 *.png
@@ -26,6 +26,7 @@ chardet/*
 chardet-3.0.4.dist-info/*
 idna/*
 idna-2.6.dist-info/*
+jsonschema/*
 requests/*
 requests-2.18.4.dist-info/*
 urllib3/*
