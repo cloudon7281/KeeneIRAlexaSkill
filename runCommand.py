@@ -106,6 +106,7 @@ def run_command(verb, command_tuple, pause, payload):
             log_info(command_tuple['single']['log'])
 
         globals()[protocol_map[protocol]](target, KIRA_string, repeats, DELAY)
+        time.sleep(pause)
         
     elif verb == 'StepIRCommands':
         # In this case we need to extract the value N in the payload
