@@ -1,3 +1,3 @@
 @echo off
-del kira.log
+if exist kira.log del kira.log
 python KeeneIRAlexa.py %*

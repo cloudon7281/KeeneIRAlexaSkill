@@ -69,7 +69,15 @@
             }
         }
     },
-    "Nintendo": {
+    "Cambridge Audio": {
+        "CXN v2": {
+            "roles": [ "A_source" ],
+            "supports": [],
+            "protocol": "udp",
+            "IRcodes": {             
+            }
+        }
+    },"Nintendo": {
         "Wii U": {
             "roles": [ "AV_source" ],
             "supports": [],
