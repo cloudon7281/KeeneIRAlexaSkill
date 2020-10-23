@@ -62,7 +62,7 @@ def print_user_details(user_details, device_status):
 	
 def print_device_status(device_status):
 	for device in device_status:
-		print("%s is %s" % (device, "on" if device_status[device] else "off"))
+		print("%-20s%s" % (device, "On" if device_status[device] else "Off"))
 
 def print_device(device):
 	roles = device['roles']
