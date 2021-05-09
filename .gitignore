@@ -6,8 +6,7 @@ __pycache__/*
 *.zip
 *.log
 keene-ir-dev.csv
-userDetails.json
-userDetails.py
+userDetails.*
 #alexa_smart_home_message_schema.json
 
 # Skill icons
